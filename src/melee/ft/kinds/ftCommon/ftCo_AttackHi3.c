@@ -38,16 +38,39 @@ bool ftCo_AttackHi3_CheckInput(Fighter_GObj* gobj)
 void doEnter(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
+    f32 anim_speed = 1.0f;
+
+    if (fp->kind == Ft_Kind_Ganon) {
+        anim_speed = 16.0f;
+    }
+
     fp->allow_interrupt = false;
-    Fighter_ChangeMotionState(gobj, ftCo_MS_AttackHi3, Ft_MF_None, 0, 1, 0,
-                              NULL);
+    Fighter_ChangeMotionState(gobj, ftCo_MS_AttackHi3, Ft_MF_None, 0,
+                              anim_speed, 0, NULL);
     ftAnim_8006EBA4(gobj);
 }
 
-void ftCo_AttackHi3_Anim(Fighter_GObj* arg0)
+void ftCo_AttackHi3_Anim(Fighter_GObj* gobj)
 {
-    if (!ftAnim_IsFramesRemaining(arg0)) {
-        ft_8008A2BC(arg0);
+    Fighter* fp = GET_FIGHTER(gobj);
+
+    // Ganon's damaging hitbox is active on frames 81-83. Fast-forward to frame
+    // 80, run the active window at normal speed so collision gets three real
+    // gameplay ticks, then fast-forward the recovery as well.
+    if (fp->kind == Ft_Kind_Ganon) {
+        if (fp->cur_anim_frame >= 80.0f && fp->cur_anim_frame < 84.0f &&
+            fp->frame_speed_mul > 1.0f)
+        {
+            ftAnim_SetAnimRate(gobj, 1.0f);
+        } else if (fp->cur_anim_frame >= 84.0f &&
+                   fp->frame_speed_mul == 1.0f)
+        {
+            ftAnim_SetAnimRate(gobj, 16.0f);
+        }
+    }
+
+    if (!ftAnim_IsFramesRemaining(gobj)) {
+        ft_8008A2BC(gobj);
     }
 }
 
