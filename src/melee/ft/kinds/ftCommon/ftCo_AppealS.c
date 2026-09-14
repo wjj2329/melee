@@ -20,6 +20,7 @@
 #include <melee/ft/ft_081B.h>
 #include <melee/ft/ft_084E.h>
 #include <melee/ft/ft_0892.h>
+#include <melee/ft/ft_0D27.h>
 #include <melee/ft/ftdata.h>
 #include <melee/ft/inlines.h>
 #include <melee/ft/kinds/ftCLink/ftclink.h>
@@ -106,7 +107,12 @@ void ftCo_800DEBD0(Fighter_GObj* gobj)
 void ftCo_AppealS_Anim(Fighter_GObj* gobj)
 {
     if (!ftAnim_IsFramesRemaining(gobj)) {
+        Fighter* fp = GET_FIGHTER(gobj);
         ft_8008A2BC(gobj);
+
+        if (fp->kind == Ft_Kind_Mario) {
+            ftCo_800D2770(gobj, fp->x34_scale.x * 1.5f);
+        }
     }
 }
 
