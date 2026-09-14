@@ -28,6 +28,8 @@
 #include <melee/lb/lbaudio_ax.h>
 #include <melee/lb/lbcommand.h>
 #include <melee/lb/types.h>
+#include <melee/pl/plbonuslib.h>
+#include <melee/pl/player.h>
 #include <sysdolphin/baselib/gobj.h>
 #include <sysdolphin/baselib/gobjproc.h>
 #include <sysdolphin/baselib/random.h>
@@ -1115,7 +1117,19 @@ void ftAction_80072BE4(Fighter_GObj* gobj, CommandInfo* cmd)
 void ftAction_80072BF4(Fighter_GObj* gobj, CommandInfo* cmd)
 {
     Fighter* fp = GET_FIGHTER(gobj);
-    Fighter_TakeDamage_8006CC7C(fp, cmd->u->unk18.damage_amount);
+    float amount = cmd->u->unk18.damage_amount;
+
+    if (fp->kind == Ft_Kind_Pichu) {
+        if (amount > fp->dmg.x1830_percent) {
+            amount = fp->dmg.x1830_percent;
+        }
+        fp->dmg.x1830_percent -= amount;
+        Player_SetHPByIndex(fp->player_id, fp->is_sub_fighter,
+                            fp->dmg.x1830_percent);
+        pl_80040B8C(fp->player_id, fp->is_sub_fighter, amount);
+    } else {
+        Fighter_TakeDamage_8006CC7C(fp, amount);
+    }
     NEXT_CMD(cmd);
 }
 
