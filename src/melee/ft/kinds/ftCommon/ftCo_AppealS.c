@@ -111,7 +111,7 @@ void ftCo_AppealS_Anim(Fighter_GObj* gobj)
         ft_8008A2BC(gobj);
 
         if (fp->kind == Ft_Kind_Mario) {
-            ftCo_800D2770(gobj, fp->x34_scale.x * 1.8f);
+            ftCo_800D2770(gobj, fp->x34_scale.x * 1.5f);
         }
     }
 }
