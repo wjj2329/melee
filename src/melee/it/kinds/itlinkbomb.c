@@ -19,6 +19,9 @@
 #include <sysdolphin/baselib/jobj.h>
 #include <sysdolphin/baselib/random.h>
 
+#define IT_CLINK_GIANT_BOMB_VISUAL_SCALE 3.0f
+#define IT_CLINK_GIANT_BOMB_BLAST_SCALE 3.0f
+
 const Vec3 it_803B8640 = { 0 };
 
 ItemStateTable it_803F6888[] = {
@@ -36,6 +39,20 @@ ItemStateTable it_803F6888[] = {
     { 0, itLinkbomb_UnkMotion6_Anim, itLinkbomb_UnkMotion6_Phys,
       itLinkbomb_UnkMotion6_Coll },
 };
+
+static inline void itLinkBomb_ApplyGiantVisual(Item_GObj* gobj)
+{
+    Item* item = GET_ITEM(gobj);
+
+    // Keep item->scl at its retail value until the explosion so held and
+    // thrown collision remain stable. This changes only the rendered model.
+    if (item->kind == It_Kind_CLink_Bomb && item->msid != 5) {
+        float scale = item->scl * IT_CLINK_GIANT_BOMB_VISUAL_SCALE;
+        HSD_JObjSetScaleX(gobj->hsd_obj, scale);
+        HSD_JObjSetScaleY(gobj->hsd_obj, scale);
+        HSD_JObjSetScaleZ(gobj->hsd_obj, scale);
+    }
+}
 
 #ifdef MUST_MATCH
 static void order_sdata2(void)
@@ -71,6 +88,7 @@ void it_8029D9A4(HSD_GObj* gobj, enum_t msid, Item_StateChangeFlags arg2)
     }
     HSD_JObjSetTranslateY(jobj, y);
     HSD_JObjSetRotationX(jobj, x);
+    itLinkBomb_ApplyGiantVisual(gobj);
 }
 
 static inline void it_8029DB5C_Inline_Matching(HSD_GObj* gobj, Item* item,
@@ -216,6 +234,7 @@ HSD_GObj* it_8029DD58(Item_GObj* fighter_gobj, Vec3* arg1, u32 arg2, int arg3,
         item = GET_ITEM(temp_r3);
         attr = item->xC4_article_data->x4_specialAttributes;
         it_8029DD58_inline(item, attr, fighter_gobj, temp_r3, arg2);
+        itLinkBomb_ApplyGiantVisual(temp_r3);
     }
     return temp_r3;
 }
@@ -249,6 +268,7 @@ bool itLinkbomb_UnkMotion0_Anim(HSD_GObj* gobj)
     } else {
         it_8029DB5C_Inline_Matching(gobj, item, article, sa);
     }
+    itLinkBomb_ApplyGiantVisual(gobj);
     return 0;
 }
 
@@ -283,6 +303,7 @@ bool itLinkbomb_UnkMotion1_Anim(HSD_GObj* gobj)
         it_8029DB5C_Inline_Matching(gobj, item, article, sa);
     }
 
+    itLinkBomb_ApplyGiantVisual(gobj);
     return false;
 }
 
@@ -333,6 +354,7 @@ bool itLinkbomb_UnkMotion2_Anim(HSD_GObj* gobj)
         it_8029DB5C_Inline_Matching(gobj, item, article, sa);
     }
 
+    itLinkBomb_ApplyGiantVisual(gobj);
     return 0;
 }
 
@@ -425,6 +447,7 @@ bool itLinkbomb_UnkMotion3_Anim(Item_GObj* gobj)
     if (attrs != NULL) {
     }
     itLinkbomb_UnkMotion3_Anim_inline2(gobj);
+    itLinkBomb_ApplyGiantVisual(gobj);
     return false;
 }
 
@@ -501,6 +524,7 @@ bool itLinkbomb_UnkMotion4_Anim(HSD_GObj* gobj)
             }
         }
     }
+    itLinkBomb_ApplyGiantVisual(gobj);
     return false;
 }
 
@@ -540,8 +564,10 @@ void it_8029F69C(HSD_GObj* gobj)
     int pad[2];
     Vec3 item_pos;
     Vec3 const_vec;
+    f32 effect_scale;
 
     item = GET_ITEM(gobj);
+    effect_scale = 1.0f;
     jobj = HSD_GObjGetHSDObj(gobj);
     it_80275444(gobj);
     if (item->xDC8_word.flags.x13) {
@@ -564,8 +590,15 @@ void it_8029F69C(HSD_GObj* gobj)
     it_802756D0(gobj);
     it_80272A60(gobj);
     it_8029D9A4(gobj, 5, 0x0); // inline
+    if (item->kind == It_Kind_CLink_Bomb) {
+        // State 5 is explosion-only, so it is now safe for model scale to
+        // participate in collision and enlarge the actual blast hitbox.
+        item->scl *= IT_CLINK_GIANT_BOMB_BLAST_SCALE;
+        effect_scale = IT_CLINK_GIANT_BOMB_BLAST_SCALE;
+        Item_8026849C(gobj);
+    }
     item_pos = item->pos;
-    lb_800119DC(&item_pos, 0x78, 1.0f, 0.02f, 1.0471976f);
+    lb_800119DC(&item_pos, 0x78, effect_scale, 0.02f, 1.0471976f);
 }
 
 bool itLinkbomb_UnkMotion5_Anim(Item_GObj* gobj)
@@ -656,6 +689,7 @@ bool itLinkbomb_UnkMotion6_Anim(HSD_GObj* gobj)
         it_8029DB5C_Inline_Matching(gobj, item, article, sa);
     }
 
+    itLinkBomb_ApplyGiantVisual(gobj);
     return 0;
 }
 

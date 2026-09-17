@@ -83,6 +83,21 @@ overlapping any files in the disc filesystem.
 - Select Young Link and Kirby with Link's copied ability and confirm their bow
   speed and arrow speed remain unchanged.
 
+## Young Link
+
+- Pull a bomb and confirm its model is roughly three times normal size while
+  held, thrown, airborne, and resting on the ground.
+- Confirm Young Link can hold, throw, catch, pick up, and drop the giant bomb
+  without unexpected collision or movement.
+- Detonate it by timer, impact, and incoming damage; confirm the visible blast
+  and damaging radius are both dramatically larger.
+- Test the blast against grounded and airborne opponents, shields, walls,
+  platforms, and stage edges.
+- Confirm reflected and shield-bounced bombs still behave normally.
+- Repeat at least 20 bombs, including simultaneous bombs and after a stock
+  loss.
+- Select regular Link and confirm his bombs retain normal size and blast range.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does

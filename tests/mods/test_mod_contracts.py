@@ -193,5 +193,38 @@ class LinkMachineGunBowContractTests(unittest.TestCase):
         )
 
 
+class YoungLinkGiantBombContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source("src/melee/it/kinds/itlinkbomb.c")
+
+    def test_giant_bomb_is_guarded_to_young_link(self) -> None:
+        self.assertGreaterEqual(
+            self.code.count("item->kind == It_Kind_CLink_Bomb"), 2
+        )
+
+    def test_normal_bomb_uses_render_only_scale(self) -> None:
+        self.assertIn("IT_CLINK_GIANT_BOMB_VISUAL_SCALE 3.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"float scale = item->scl \* IT_CLINK_GIANT_BOMB_VISUAL_SCALE",
+        )
+        self.assertIn("HSD_JObjSetScaleX(gobj->hsd_obj, scale)", self.code)
+        self.assertIn("HSD_JObjSetScaleY(gobj->hsd_obj, scale)", self.code)
+        self.assertIn("HSD_JObjSetScaleZ(gobj->hsd_obj, scale)", self.code)
+
+    def test_gameplay_scale_changes_only_in_explosion_state(self) -> None:
+        self.assertIn("item->msid != 5", self.code)
+        self.assertIn("IT_CLINK_GIANT_BOMB_BLAST_SCALE 3.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"(?s)it_8029D9A4\(gobj, 5, 0x0\);.*?"
+            r"item->scl \*= IT_CLINK_GIANT_BOMB_BLAST_SCALE",
+        )
+        self.assertIn(
+            "lb_800119DC(&item_pos, 0x78, effect_scale", self.code
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
