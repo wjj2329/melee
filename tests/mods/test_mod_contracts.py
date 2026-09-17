@@ -151,5 +151,47 @@ class PuffFlyingKaraokeContractTests(unittest.TestCase):
         )
 
 
+class LinkMachineGunBowContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.fighter_code = source(
+            "src/melee/ft/kinds/ftLink/ftlinkspecialn.c"
+        )
+        cls.arrow_code = source("src/melee/it/kinds/itlinkarrow.c")
+
+    def test_rapid_animation_is_guarded_to_regular_link(self) -> None:
+        self.assertIn("FTLK_MACHINE_GUN_ANIM_RATE 3.0f", self.fighter_code)
+        self.assertIn("fp->kind == Ft_Kind_Link", self.fighter_code)
+        self.assertRegex(
+            self.fighter_code,
+            r"return retail_rate \* FTLK_MACHINE_GUN_ANIM_RATE",
+        )
+
+    def test_startup_and_recovery_both_use_the_fast_rate(self) -> None:
+        self.assertGreaterEqual(
+            self.fighter_code.count("ftLk_SpecialN_GetAnimRate"), 6
+        )
+        self.assertRegex(
+            self.fighter_code,
+            r"ftLk_SpecialN_GetAnimRate\(fp, 1\.0f\)",
+        )
+
+    def test_only_regular_link_arrows_get_laser_speed(self) -> None:
+        self.assertIn(
+            "IT_LINK_ARROW_MACHINE_GUN_SPEED 4.0f", self.arrow_code
+        )
+        self.assertIn(
+            "ip->kind == It_Kind_Link_Arrow", self.arrow_code
+        )
+        self.assertIn(
+            "ip->x40_vel.x *= IT_LINK_ARROW_MACHINE_GUN_SPEED",
+            self.arrow_code,
+        )
+        self.assertIn(
+            "ip->x40_vel.y *= IT_LINK_ARROW_MACHINE_GUN_SPEED",
+            self.arrow_code,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

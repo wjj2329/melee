@@ -42,6 +42,16 @@ static MotionFlags const coll_mf =
     Ft_MF_SkipItemVis | Ft_MF_Unk19 | Ft_MF_SkipModelPartVis |
     Ft_MF_SkipModelFlags | Ft_MF_Unk27;
 
+#define FTLK_MACHINE_GUN_ANIM_RATE 3.0f
+
+static inline float ftLk_SpecialN_GetAnimRate(Fighter* fp, float retail_rate)
+{
+    if (fp->kind == Ft_Kind_Link) {
+        return retail_rate * FTLK_MACHINE_GUN_ANIM_RATE;
+    }
+    return retail_rate;
+}
+
 ftLk_SpecialNIndex ftLk_SpecialN_GetIndex(Fighter_GObj* gobj)
 {
     ftLk_SpecialNIndex result = ftLk_SpecialNIndex_None;
@@ -264,7 +274,8 @@ void ftLk_SpecialN_Enter(Fighter_GObj* gobj)
     Fighter_ChangeMotionState(gobj, ftLk_MS_SpecialNStart, Ft_MF_None, 0.0f,
                               1.0f, 0.0f, NULL);
     setCallbacks(gobj);
-    ftAnim_SetAnimRate(gobj, da->specialn_anim_rate);
+    ftAnim_SetAnimRate(
+        gobj, ftLk_SpecialN_GetAnimRate(fp, da->specialn_anim_rate));
     ftAnim_8006EBA4(gobj);
     if (isDrawback(gobj) == true) {
         ftLk_SpecialN_UnsetArrow(gobj);
@@ -284,7 +295,8 @@ void ftLk_SpecialAirN_Enter(Fighter_GObj* gobj)
     Fighter_ChangeMotionState(gobj, ftLk_MS_SpecialAirNStart, Ft_MF_None, 0.0f,
                               1.0f, 0.0f, NULL);
     setCallbacks(gobj);
-    ftAnim_SetAnimRate(gobj, da->specialn_anim_rate);
+    ftAnim_SetAnimRate(
+        gobj, ftLk_SpecialN_GetAnimRate(fp, da->specialn_anim_rate));
     ftAnim_8006EBA4(gobj);
     if (isDrawback(gobj) == true) {
         ftLk_SpecialN_UnsetArrow(gobj);
@@ -305,7 +317,8 @@ void ftLk_SpecialNStart_Anim(Fighter_GObj* gobj)
         fp->mv.lk.specialn.x0.x = 1.0f;
         fp->cmd_vars[cmd_unk2] = false;
     }
-    ftAnim_SetAnimRate(gobj, da->specialn_anim_rate);
+    ftAnim_SetAnimRate(
+        gobj, ftLk_SpecialN_GetAnimRate(fp, da->specialn_anim_rate));
     if (!isDrawn(gobj)) {
         animate(gobj);
         if (!ftAnim_IsFramesRemaining(gobj)) {
@@ -347,7 +360,9 @@ static inline void updateParts(Fighter_GObj* gobj)
 
 void ftLk_SpecialNEnd_Anim(Fighter_GObj* gobj)
 {
+    Fighter* fp = GET_FIGHTER(gobj);
     FORCE_PAD_STACK_8;
+    ftAnim_SetAnimRate(gobj, ftLk_SpecialN_GetAnimRate(fp, 1.0f));
     if (!ftAnim_IsFramesRemaining(gobj)) {
         ftLk_SpecialN_UnsetFv14(gobj);
         updateParts(gobj);
@@ -361,6 +376,8 @@ void ftLk_SpecialAirNStart_Anim(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
     ftLk_DatAttrs* da = fp->dat_attrs;
+    ftAnim_SetAnimRate(
+        gobj, ftLk_SpecialN_GetAnimRate(fp, da->specialn_anim_rate));
     if (fp->cmd_vars[cmd_unk2] && fp->mv.lk.specialn.x0.x == 0) {
         fp->mv.lk.specialn.x0.x = 1.0f;
         fp->cmd_vars[cmd_unk2] = false;
@@ -395,6 +412,7 @@ void ftLk_SpecialAirNEnd_Anim(Fighter_GObj* gobj)
     Fighter* fp = GET_FIGHTER(gobj);
     ftLk_DatAttrs* da = fp->dat_attrs;
     FORCE_PAD_STACK_16;
+    ftAnim_SetAnimRate(gobj, ftLk_SpecialN_GetAnimRate(fp, 1.0f));
     if (!ftAnim_IsFramesRemaining(gobj)) {
         ftLk_SpecialN_UnsetArrow(gobj);
         ftLk_SpecialN_UnsetFv14(gobj);

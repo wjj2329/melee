@@ -23,6 +23,8 @@
 #include <sysdolphin/baselib/mtx.h>
 #include <sysdolphin/baselib/random.h>
 
+#define IT_LINK_ARROW_MACHINE_GUN_SPEED 4.0f
+
 #ifdef MUST_MATCH
 static void sdata2_order(void)
 {
@@ -295,6 +297,10 @@ bool itLinkArrow_802A850C(Item_GObj* gobj, Vec3* arg1, Vec3* arg2, f32 arg3,
         ip->x40_vel.y = ip->xDD4_itemVar.linkarrow.xA8 *
                         sinf(ip->xDD4_itemVar.linkarrow.x94);
         ip->x40_vel.z = 0.0f;
+        if (ip->kind == It_Kind_Link_Arrow) {
+            ip->x40_vel.x *= IT_LINK_ARROW_MACHINE_GUN_SPEED;
+            ip->x40_vel.y *= IT_LINK_ARROW_MACHINE_GUN_SPEED;
+        }
         HSD_JObjSetRotationZ(jobj, ip->xDD4_itemVar.linkarrow.x94);
         ip->xDD4_itemVar.linkarrow.xA0 = 1;
 

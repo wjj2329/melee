@@ -69,6 +69,20 @@ overlapping any files in the disc filesystem.
   stock loss.
 - Repeat aerial Sing at least 20 times and confirm it always returns to fall.
 
+## Link
+
+- Tap neutral-B repeatedly on the ground and in the air; confirm Link draws,
+  fires, and recovers much faster than retail.
+- Confirm uncharged and charged arrows travel dramatically faster while
+  retaining their normal damage, angle, gravity, and collision behavior.
+- Fire arrows into opponents, shields, walls, floors, and slopes from both
+  facing directions.
+- Confirm reflected arrows travel correctly and do not become stuck.
+- Hold neutral-B to charge and confirm the charging loop still works.
+- Repeat at least 30 rapid shots, then test again after a stock loss.
+- Select Young Link and Kirby with Link's copied ability and confirm their bow
+  speed and arrow speed remain unchanged.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does
