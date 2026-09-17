@@ -57,6 +57,18 @@ overlapping any files in the disc filesystem.
 - Repeat aerial up-B at least 20 times, including after a stock loss.
 - Confirm grounded up-B retains its normal movement and behavior.
 
+## Jigglypuff
+
+- Use Sing in the air and confirm Puff rises slowly throughout the move.
+- Hold left and right and confirm Puff can steer smoothly in both directions.
+- Confirm every normal Sing wave can still put nearby opponents to sleep.
+- Start Sing on the ground and confirm its movement remains unchanged.
+- Start aerial Sing and land during it; confirm it transitions cleanly to the
+  grounded animation without retaining upward movement.
+- Test beneath platforms and ceilings, beside walls and ledges, and after a
+  stock loss.
+- Repeat aerial Sing at least 20 times and confirm it always returns to fall.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does

@@ -20,6 +20,10 @@
 #include <sysdolphin/baselib/archive.h>
 #include <sysdolphin/baselib/gobj.h>
 
+#define FTPR_KARAOKE_RISE_SPEED 0.35f
+#define FTPR_KARAOKE_DRIFT_ACCEL 2.0f
+#define FTPR_KARAOKE_MAX_SPEED 1.5f
+
 static inline void ftPurin_SpecialHi_SetVars(HSD_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
@@ -105,7 +109,16 @@ void ftPr_SpecialHi_Phys(HSD_GObj* gobj)
 
 void ftPr_SpecialAirHi_Phys(HSD_GObj* gobj)
 {
-    ft_80084EEC(gobj);
+    Fighter* fp = GET_FIGHTER(gobj);
+
+    // Sing's animation, sleep hitboxes, and collision state remain unchanged;
+    // only its aerial movement becomes a slow, steerable karaoke flight.
+    fp->self_vel.y = FTPR_KARAOKE_RISE_SPEED;
+    fp->x74_self_accel.y = 0.0f;
+    ftCommon_CalcSelfAccel_DriftSimple(
+        fp, 0.0f,
+        fp->co_attrs.air_drift_stick_mul * FTPR_KARAOKE_DRIFT_ACCEL,
+        fp->co_attrs.air_drift_max * FTPR_KARAOKE_MAX_SPEED);
 }
 
 void ftPr_SpecialHi_Coll(HSD_GObj* gobj)

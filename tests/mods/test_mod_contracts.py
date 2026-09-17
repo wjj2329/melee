@@ -120,5 +120,36 @@ class BowserHelicopterContractTests(unittest.TestCase):
         )
 
 
+class PuffFlyingKaraokeContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source(
+            "src/melee/ft/kinds/ftPurin/ftpurinspecialhi.c"
+        )
+
+    def test_aerial_sing_has_constant_lift(self) -> None:
+        self.assertIn("FTPR_KARAOKE_RISE_SPEED 0.35f", self.code)
+        self.assertRegex(
+            self.code,
+            r"self_vel\.y\s*=\s*FTPR_KARAOKE_RISE_SPEED",
+        )
+        self.assertIn("fp->x74_self_accel.y = 0.0f", self.code)
+
+    def test_aerial_sing_has_horizontal_steering(self) -> None:
+        self.assertIn("FTPR_KARAOKE_DRIFT_ACCEL 2.0f", self.code)
+        self.assertIn("FTPR_KARAOKE_MAX_SPEED 1.5f", self.code)
+        self.assertRegex(
+            self.code,
+            r"ftCommon_CalcSelfAccel_DriftSimple\(\s*fp,\s*0\.0f,",
+        )
+
+    def test_grounded_sing_keeps_retail_physics(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"void ftPr_SpecialHi_Phys\(HSD_GObj\* gobj\)\s*"
+            r"\{\s*ft_80084F3C\(gobj\);\s*\}",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
