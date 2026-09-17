@@ -21,6 +21,7 @@
 
 #define IT_CLINK_GIANT_BOMB_VISUAL_SCALE 3.0f
 #define IT_CLINK_GIANT_BOMB_BLAST_SCALE 3.0f
+#define IT_CLINK_GIANT_BOMB_DAMAGE_SCALE 3.0f
 
 const Vec3 it_803B8640 = { 0 };
 
@@ -565,6 +566,7 @@ void it_8029F69C(HSD_GObj* gobj)
     Vec3 item_pos;
     Vec3 const_vec;
     f32 effect_scale;
+    int i;
 
     item = GET_ITEM(gobj);
     effect_scale = 1.0f;
@@ -596,6 +598,15 @@ void it_8029F69C(HSD_GObj* gobj)
         item->scl *= IT_CLINK_GIANT_BOMB_BLAST_SCALE;
         effect_scale = IT_CLINK_GIANT_BOMB_BLAST_SCALE;
         Item_8026849C(gobj);
+        for (i = 0; i < ARRAY_SIZE(item->x5D4_hitboxes); i++) {
+            HitCapsule* hit = &item->x5D4_hitboxes[i].hit;
+            if (hit->state != HitCapsule_Disabled) {
+                it_80272460(
+                    hit,
+                    hit->unk_count * IT_CLINK_GIANT_BOMB_DAMAGE_SCALE,
+                    gobj);
+            }
+        }
     }
     item_pos = item->pos;
     lb_800119DC(&item_pos, 0x78, effect_scale, 0.02f, 1.0471976f);

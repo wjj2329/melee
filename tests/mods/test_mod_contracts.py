@@ -225,6 +225,15 @@ class YoungLinkGiantBombContractTests(unittest.TestCase):
             "lb_800119DC(&item_pos, 0x78, effect_scale", self.code
         )
 
+    def test_explosion_damage_scales_with_the_giant_blast(self) -> None:
+        self.assertIn("IT_CLINK_GIANT_BOMB_DAMAGE_SCALE 3.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"(?s)hit->state != HitCapsule_Disabled.*?it_80272460\("
+            r"\s*hit,\s*hit->unk_count \* "
+            r"IT_CLINK_GIANT_BOMB_DAMAGE_SCALE",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

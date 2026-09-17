@@ -90,7 +90,8 @@ overlapping any files in the disc filesystem.
 - Confirm Young Link can hold, throw, catch, pick up, and drop the giant bomb
   without unexpected collision or movement.
 - Detonate it by timer, impact, and incoming damage; confirm the visible blast
-  and damaging radius are both dramatically larger.
+  and damaging radius are both dramatically larger, and that the explosion
+  deals roughly three times the original damage.
 - Test the blast against grounded and airborne opponents, shields, walls,
   platforms, and stage edges.
 - Confirm reflected and shield-bounced bombs still behave normally.
