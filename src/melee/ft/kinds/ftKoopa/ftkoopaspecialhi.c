@@ -54,6 +54,8 @@ void ftKp_SpecialAirHi_Enter(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
     ftKoopaAttributes* da = fp->dat_attrs;
+    float max_speed = da->x60;
+    float initial_lift = da->x54;
     PAD_STACK(8);
     Fighter_ChangeMotionState(gobj, 0x168, 0, 0.0f, 1.0f, 0.0f, NULL);
     ftKp_SpecialHi_Enter_inline(gobj);
@@ -61,10 +63,15 @@ void ftKp_SpecialAirHi_Enter(Fighter_GObj* gobj)
     fp->cmd_vars[2] = 0;
     fp->cmd_vars[1] = 0;
     fp->cmd_vars[0] = 0;
-    // Keep all of Whirling Fortress intact, but turn its aerial movement into
-    // a steerable helicopter ride.
-    ftCommon_ClampGroundVel(fp, da->x60 * FTKP_HELICOPTER_MAX_SPEED);
-    fp->self_vel.y = da->x54 * FTKP_HELICOPTER_INITIAL_LIFT;
+    if (fp->kind == Ft_Kind_Koopa) {
+        // Keep all of Whirling Fortress intact, but turn its aerial movement
+        // into a steerable helicopter ride. Giga Bowser shares this callback,
+        // so guard the altered physics to ordinary Bowser.
+        max_speed *= FTKP_HELICOPTER_MAX_SPEED;
+        initial_lift *= FTKP_HELICOPTER_INITIAL_LIFT;
+    }
+    ftCommon_ClampGroundVel(fp, max_speed);
+    fp->self_vel.y = initial_lift;
     fp->x1968_jumpsUsed = fp->co_attrs.max_jumps;
     fp->mv.co.capturekoopa.xC = 0.0f;
     fp->mv.kp.specials.x10 = 0;
@@ -137,13 +144,21 @@ void ftKp_SpecialAirHi_Phys(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
     ftKoopaAttributes* da = fp->dat_attrs;
+    float gravity = da->x58;
+    float terminal_velocity = da->x5C;
+    float drift_accel = da->x6C;
+    float max_speed = da->x64;
     PAD_STACK(8);
     if (fp->cmd_vars[0] == 0) {
-        ftCommon_Fall(fp, da->x58 * FTKP_HELICOPTER_GRAVITY,
-                      da->x5C * FTKP_HELICOPTER_TERMINAL_VELOCITY);
-        ftCommon_CalcSelfAccel_DriftSimple(
-            fp, 0.0f, da->x6C * FTKP_HELICOPTER_DRIFT_ACCEL,
-            da->x64 * FTKP_HELICOPTER_MAX_SPEED);
+        if (fp->kind == Ft_Kind_Koopa) {
+            gravity *= FTKP_HELICOPTER_GRAVITY;
+            terminal_velocity *= FTKP_HELICOPTER_TERMINAL_VELOCITY;
+            drift_accel *= FTKP_HELICOPTER_DRIFT_ACCEL;
+            max_speed *= FTKP_HELICOPTER_MAX_SPEED;
+        }
+        ftCommon_Fall(fp, gravity, terminal_velocity);
+        ftCommon_CalcSelfAccel_DriftSimple(fp, 0.0f, drift_accel,
+                                           max_speed);
     } else {
         ft_80084DB0(gobj);
     }

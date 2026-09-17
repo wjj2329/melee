@@ -81,17 +81,21 @@ class BowserHelicopterContractTests(unittest.TestCase):
             "src/melee/ft/kinds/ftKoopa/ftkoopaspecialhi.c"
         )
 
+    def test_change_is_guarded_to_ordinary_bowser(self) -> None:
+        self.assertGreaterEqual(
+            self.code.count("fp->kind == Ft_Kind_Koopa"), 2
+        )
+
     def test_aerial_up_b_gets_extra_lift_and_horizontal_speed(self) -> None:
         self.assertIn("FTKP_HELICOPTER_INITIAL_LIFT 2.0f", self.code)
         self.assertIn("FTKP_HELICOPTER_MAX_SPEED 2.5f", self.code)
         self.assertRegex(
             self.code,
-            r"self_vel\.y\s*=\s*da->x54\s*\*\s*"
-            r"FTKP_HELICOPTER_INITIAL_LIFT",
+            r"initial_lift\s*\*=\s*FTKP_HELICOPTER_INITIAL_LIFT",
         )
         self.assertRegex(
             self.code,
-            r"da->x64\s*\*\s*FTKP_HELICOPTER_MAX_SPEED",
+            r"max_speed\s*\*=\s*FTKP_HELICOPTER_MAX_SPEED",
         )
 
     def test_helicopter_has_sustained_lift_and_stronger_steering(self) -> None:
@@ -100,9 +104,12 @@ class BowserHelicopterContractTests(unittest.TestCase):
         self.assertIn("FTKP_HELICOPTER_DRIFT_ACCEL 3.0f", self.code)
         self.assertRegex(
             self.code,
-            r"ftCommon_Fall\(fp,\s*da->x58\s*\*\s*"
-            r"FTKP_HELICOPTER_GRAVITY,\s*da->x5C\s*\*\s*"
-            r"FTKP_HELICOPTER_TERMINAL_VELOCITY\)",
+            r"gravity\s*\*=\s*FTKP_HELICOPTER_GRAVITY",
+        )
+        self.assertRegex(
+            self.code,
+            r"terminal_velocity\s*\*=\s*"
+            r"FTKP_HELICOPTER_TERMINAL_VELOCITY",
         )
 
     def test_grounded_up_b_keeps_its_original_physics(self) -> None:
