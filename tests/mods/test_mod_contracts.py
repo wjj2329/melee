@@ -74,5 +74,44 @@ class PichuHealingContractTests(unittest.TestCase):
         )
 
 
+class BowserHelicopterContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source(
+            "src/melee/ft/kinds/ftKoopa/ftkoopaspecialhi.c"
+        )
+
+    def test_aerial_up_b_gets_extra_lift_and_horizontal_speed(self) -> None:
+        self.assertIn("FTKP_HELICOPTER_INITIAL_LIFT 2.0f", self.code)
+        self.assertIn("FTKP_HELICOPTER_MAX_SPEED 2.5f", self.code)
+        self.assertRegex(
+            self.code,
+            r"self_vel\.y\s*=\s*da->x54\s*\*\s*"
+            r"FTKP_HELICOPTER_INITIAL_LIFT",
+        )
+        self.assertRegex(
+            self.code,
+            r"da->x64\s*\*\s*FTKP_HELICOPTER_MAX_SPEED",
+        )
+
+    def test_helicopter_has_sustained_lift_and_stronger_steering(self) -> None:
+        self.assertIn("FTKP_HELICOPTER_GRAVITY 0.4f", self.code)
+        self.assertIn("FTKP_HELICOPTER_TERMINAL_VELOCITY 0.6f", self.code)
+        self.assertIn("FTKP_HELICOPTER_DRIFT_ACCEL 3.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"ftCommon_Fall\(fp,\s*da->x58\s*\*\s*"
+            r"FTKP_HELICOPTER_GRAVITY,\s*da->x5C\s*\*\s*"
+            r"FTKP_HELICOPTER_TERMINAL_VELOCITY\)",
+        )
+
+    def test_grounded_up_b_keeps_its_original_physics(self) -> None:
+        self.assertIn(
+            "ftCommon_CalcGroundAccel_AccelToLStickX(fp, 0.0f, da->x68, "
+            "da->x60);",
+            self.code,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

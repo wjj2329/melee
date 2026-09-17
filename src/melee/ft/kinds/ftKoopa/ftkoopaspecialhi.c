@@ -17,6 +17,12 @@
 #include <melee/ft/kinds/ftCommon/ftCo_Fall.h>
 #include <melee/ft/kinds/ftCommon/ftCo_FallSpecial.h>
 
+#define FTKP_HELICOPTER_INITIAL_LIFT 2.0f
+#define FTKP_HELICOPTER_GRAVITY 0.4f
+#define FTKP_HELICOPTER_TERMINAL_VELOCITY 0.6f
+#define FTKP_HELICOPTER_DRIFT_ACCEL 3.0f
+#define FTKP_HELICOPTER_MAX_SPEED 2.5f
+
 static inline void ftKp_SpecialHi_Enter_inline(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
@@ -55,8 +61,10 @@ void ftKp_SpecialAirHi_Enter(Fighter_GObj* gobj)
     fp->cmd_vars[2] = 0;
     fp->cmd_vars[1] = 0;
     fp->cmd_vars[0] = 0;
-    ftCommon_ClampGroundVel(fp, da->x60);
-    fp->self_vel.y = da->x54;
+    // Keep all of Whirling Fortress intact, but turn its aerial movement into
+    // a steerable helicopter ride.
+    ftCommon_ClampGroundVel(fp, da->x60 * FTKP_HELICOPTER_MAX_SPEED);
+    fp->self_vel.y = da->x54 * FTKP_HELICOPTER_INITIAL_LIFT;
     fp->x1968_jumpsUsed = fp->co_attrs.max_jumps;
     fp->mv.co.capturekoopa.xC = 0.0f;
     fp->mv.kp.specials.x10 = 0;
@@ -131,8 +139,11 @@ void ftKp_SpecialAirHi_Phys(Fighter_GObj* gobj)
     ftKoopaAttributes* da = fp->dat_attrs;
     PAD_STACK(8);
     if (fp->cmd_vars[0] == 0) {
-        ftCommon_Fall(fp, da->x58, da->x5C);
-        ftCommon_CalcSelfAccel_DriftSimple(fp, 0.0f, da->x6C, da->x64);
+        ftCommon_Fall(fp, da->x58 * FTKP_HELICOPTER_GRAVITY,
+                      da->x5C * FTKP_HELICOPTER_TERMINAL_VELOCITY);
+        ftCommon_CalcSelfAccel_DriftSimple(
+            fp, 0.0f, da->x6C * FTKP_HELICOPTER_DRIFT_ACCEL,
+            da->x64 * FTKP_HELICOPTER_MAX_SPEED);
     } else {
         ft_80084DB0(gobj);
     }

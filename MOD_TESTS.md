@@ -46,6 +46,17 @@ overlapping any files in the disc filesystem.
 - Repeat Thunder and Quick Attack many times, including after a respawn.
 - Select Pikachu and confirm the same actions retain their retail behavior.
 
+## Bowser
+
+- Use aerial up-B and confirm the initial rise is much higher than retail.
+- Hold left and right during the move and confirm the stronger steering works
+  in both directions without snapping or becoming stuck.
+- Confirm every normal hitbox still damages grounded and airborne opponents
+  and interacts with shields.
+- Test walls, ceilings, stage edges, ledge grabs, landing, and special fall.
+- Repeat aerial up-B at least 20 times, including after a stock loss.
+- Confirm grounded up-B retains its normal movement and behavior.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does
