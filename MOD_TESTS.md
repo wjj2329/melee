@@ -117,7 +117,8 @@ overlapping any files in the disc filesystem.
 ## Yoshi
 
 - Catch an opposing fighter with grounded and aerial Egg Lay; confirm exactly
-  one ReDead appears just behind Yoshi for each successful catch.
+  one ReDead appears just behind and slightly above Yoshi for each successful
+  catch, then falls cleanly onto the stage.
 - Whiff Egg Lay and catch an item; confirm neither action spawns a ReDead.
 - Spawn three ReDeads, then catch another fighter; confirm the active ReDead
   count remains capped at three.

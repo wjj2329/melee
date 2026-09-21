@@ -295,9 +295,14 @@ class YoshiRedeadLickContractTests(unittest.TestCase):
         )
 
     def test_native_redead_spawner_is_used_behind_yoshi(self) -> None:
+        self.assertIn("FT_YOSHI_REDEAD_SPAWN_HEIGHT 6.0f", self.code)
         self.assertRegex(
             self.code,
             r"pos\.x -= fp->facing_dir \* FT_YOSHI_REDEAD_SPAWN_OFFSET",
+        )
+        self.assertRegex(
+            self.code,
+            r"pos\.y \+= FT_YOSHI_REDEAD_SPAWN_HEIGHT",
         )
         self.assertRegex(self.code, r"it_802EA9FC\(&pos,")
 

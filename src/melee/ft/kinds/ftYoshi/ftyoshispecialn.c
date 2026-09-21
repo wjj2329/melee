@@ -146,6 +146,7 @@ static u32 const motion_flags2 = motion_flags1 | Ft_MF_KeepGfx |
 
 #define FT_YOSHI_REDEAD_LIMIT 3
 #define FT_YOSHI_REDEAD_SPAWN_OFFSET 10.0f
+#define FT_YOSHI_REDEAD_SPAWN_HEIGHT 6.0f
 
 static void ftYs_SpecialN_SpawnRedead(Fighter_GObj* gobj)
 {
@@ -159,6 +160,7 @@ static void ftYs_SpecialN_SpawnRedead(Fighter_GObj* gobj)
     }
     pos = fp->cur_pos;
     pos.x -= fp->facing_dir * FT_YOSHI_REDEAD_SPAWN_OFFSET;
+    pos.y += FT_YOSHI_REDEAD_SPAWN_HEIGHT;
     it_802EA9FC(&pos, fp->facing_dir == -1.0f ? -1 : 1);
 }
 
