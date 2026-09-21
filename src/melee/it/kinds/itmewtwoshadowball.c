@@ -18,8 +18,9 @@
 
 /* 2C5B18 */ static void it_802C5B18(Item_GObj*, Item_GObj*);
 
-#define IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.04f
+#define IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.06f
 #define IT_MEWTWO_SHADOWBALL_MAX_GROWTH 4.0f
+#define IT_MEWTWO_SHADOWBALL_LIFETIME_MULTIPLIER 1.5f
 
 static inline float itMewtwoShadowball_GetGrowth(Item* ip)
 {
@@ -500,7 +501,11 @@ void it_802C5B18(Item_GObj* gobj, Item_GObj* arg1)
     Item* ip = GET_ITEM(gobj);
     itMewtwoShadowball_DatAttrs* attr =
         ip->xC4_article_data->x4_specialAttributes;
-    it_80275158(gobj, attr->x0);
+    float lifetime = attr->x0;
+    if (ip->kind == It_Kind_Mewtwo_ShadowBall) {
+        lifetime *= IT_MEWTWO_SHADOWBALL_LIFETIME_MULTIPLIER;
+    }
+    it_80275158(gobj, lifetime);
     efLib_DestroyAll(gobj);
     ip->xDD4_itemVar.mewtwoshadowball.x28 = 0;
     if (ip->xDD4_itemVar.mewtwoshadowball.x18 < 0) {

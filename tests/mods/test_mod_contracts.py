@@ -248,7 +248,7 @@ class MewtwoGrowingShadowBallContractTests(unittest.TestCase):
 
     def test_growth_is_time_based_and_safely_capped(self) -> None:
         self.assertIn(
-            "IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.04f", self.code
+            "IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.06f", self.code
         )
         self.assertIn("IT_MEWTWO_SHADOWBALL_MAX_GROWTH 4.0f", self.code)
         self.assertRegex(
@@ -259,6 +259,16 @@ class MewtwoGrowingShadowBallContractTests(unittest.TestCase):
             self.code,
             r"if \(growth > IT_MEWTWO_SHADOWBALL_MAX_GROWTH\)",
         )
+
+    def test_released_ball_gets_a_longer_bounded_lifetime(self) -> None:
+        self.assertIn(
+            "IT_MEWTWO_SHADOWBALL_LIFETIME_MULTIPLIER 1.5f", self.code
+        )
+        self.assertRegex(
+            self.code,
+            r"lifetime \*= IT_MEWTWO_SHADOWBALL_LIFETIME_MULTIPLIER",
+        )
+        self.assertRegex(self.code, r"it_80275158\(gobj, lifetime\)")
 
     def test_visual_and_hitbox_use_the_same_growth(self) -> None:
         self.assertRegex(

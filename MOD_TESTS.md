@@ -102,7 +102,8 @@ overlapping any files in the disc filesystem.
 ## Mewtwo
 
 - Fire uncharged, partially charged, and fully charged Shadow Balls; confirm
-  each grows continuously while traveling and stops growing at a finite cap.
+  each grows continuously while traveling, lasts noticeably longer than the
+  retail projectile, and stops growing at a finite cap.
 - Confirm the damaging hitbox expands with the visible ball rather than
   remaining at its original size.
 - Test hits against grounded and airborne opponents, shields, walls, floors,
