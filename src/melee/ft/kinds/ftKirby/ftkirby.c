@@ -4068,6 +4068,34 @@ void ftKb_SpecialN_800F1BAC(Fighter_GObj* gobj, s32 kind, bool arg2)
     fp->death1_cb = ftKb_Init_800EE7B8;
 }
 
+void ftKb_SpecialN_AssignRandomLoadedCopy(Fighter_GObj* gobj)
+{
+    HSD_Archive** archives = (HSD_Archive**) &ft_80459B88;
+    s32 available = 0;
+    s32 selected;
+    FighterKind kind;
+
+    for (kind = Ft_Kind_Mario; kind <= Ft_Kind_Emblem; kind++) {
+        if (ftKb_Init_803CA9D0[kind].filename != NULL &&
+            archives[kind] != NULL)
+        {
+            available++;
+        }
+    }
+    if (available == 0) {
+        return;
+    }
+    selected = HSD_Randi(available);
+    for (kind = Ft_Kind_Mario; kind <= Ft_Kind_Emblem; kind++) {
+        if (ftKb_Init_803CA9D0[kind].filename != NULL &&
+            archives[kind] != NULL && selected-- == 0)
+        {
+            ftKb_SpecialN_800F1BAC(gobj, kind, true);
+            return;
+        }
+    }
+}
+
 bool fn_800F1CA0(HSD_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);

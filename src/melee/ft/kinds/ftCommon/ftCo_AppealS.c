@@ -113,6 +113,9 @@ void ftCo_AppealS_Anim(Fighter_GObj* gobj)
         if (fp->kind == Ft_Kind_Mario) {
             ftCo_800D2770(gobj, fp->x34_scale.x * 1.5f);
         }
+        if (fp->kind == Ft_Kind_Kirby) {
+            ftKb_SpecialN_AssignRandomLoadedCopy(gobj);
+        }
     }
 }
 

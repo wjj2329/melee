@@ -128,6 +128,22 @@ overlapping any files in the disc filesystem.
   onto valid ground or safely leaves the stage.
 - Use Kirby's copied Egg Lay and confirm it does not spawn a ReDead.
 
+## Kirby
+
+- Complete repeated taunts in a normal VS match; confirm Kirby receives varied
+  copy abilities and the matching hats at taunt completion. Normal VS preloads
+  Kirby's complete valid copy roster, so the result need not match an opponent.
+- Confirm repeated taunts never grant Kirby's, Nana's, or a boss character's
+  invalid/nonexistent copy ability.
+- Interrupt Kirby's taunt with an attack; confirm he loses his previous copy
+  ability but does not receive a replacement.
+- Exercise projectile, chargeable, transformation, and held-item copy abilities,
+  then taunt again; confirm the previous ability cleans itself up correctly.
+- Lose a stock while holding a taunt-granted ability and confirm Kirby returns
+  without stale projectiles, charge state, or hat graphics.
+- Complete at least 30 taunts in one match and confirm memory and gameplay remain
+  stable.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does

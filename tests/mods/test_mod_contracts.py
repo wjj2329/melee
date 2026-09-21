@@ -320,5 +320,33 @@ class YoshiRedeadLickContractTests(unittest.TestCase):
         )
 
 
+class KirbyRandomTauntCopyContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.kirby_code = source("src/melee/ft/kinds/ftKirby/ftkirby.c")
+        cls.taunt_code = source("src/melee/ft/kinds/ftCommon/ftCo_AppealS.c")
+
+    def test_completed_taunt_assigns_a_copy_only_to_kirby(self) -> None:
+        self.assertRegex(
+            self.taunt_code,
+            r"if \(fp->kind == Ft_Kind_Kirby\) \{\s*"
+            r"ftKb_SpecialN_AssignRandomLoadedCopy\(gobj\);",
+        )
+
+    def test_random_pool_contains_only_preloaded_valid_copy_archives(self) -> None:
+        self.assertGreaterEqual(
+            self.kirby_code.count("ftKb_Init_803CA9D0[kind].filename != NULL"),
+            2,
+        )
+        self.assertGreaterEqual(self.kirby_code.count("archives[kind] != NULL"), 2)
+        self.assertIn("selected = HSD_Randi(available);", self.kirby_code)
+
+    def test_assignment_uses_the_normal_copy_state_path(self) -> None:
+        self.assertRegex(
+            self.kirby_code,
+            r"ftKb_SpecialN_800F1BAC\(gobj, kind, true\);",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
