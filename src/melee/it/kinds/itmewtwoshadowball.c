@@ -18,6 +18,23 @@
 
 /* 2C5B18 */ static void it_802C5B18(Item_GObj*, Item_GObj*);
 
+#define IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.04f
+#define IT_MEWTWO_SHADOWBALL_MAX_GROWTH 4.0f
+
+static inline float itMewtwoShadowball_GetGrowth(Item* ip)
+{
+    float growth = 1.0f;
+
+    if (ip->kind == It_Kind_Mewtwo_ShadowBall) {
+        growth += ip->xDD4_itemVar.mewtwoshadowball.x4C *
+                  IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME;
+        if (growth > IT_MEWTWO_SHADOWBALL_MAX_GROWTH) {
+            growth = IT_MEWTWO_SHADOWBALL_MAX_GROWTH;
+        }
+    }
+    return growth;
+}
+
 ItemStateTable it_803F7760[] = {
     { 0, itMewtwoshadowball_UnkMotion0_Anim,
       itMewtwoshadowball_UnkMotion0_Phys, itMewtwoshadowball_UnkMotion0_Coll },
@@ -497,6 +514,10 @@ void it_802C5B18(Item_GObj* gobj, Item_GObj* arg1)
     }
     Item_80268E5C(gobj, ip->xDD4_itemVar.mewtwoshadowball.x18 + 1,
                   ITEM_ANIM_UPDATE);
+    if (ip->kind == It_Kind_Mewtwo_ShadowBall) {
+        ip->xDD4_itemVar.mewtwoshadowball.x64 =
+            ip->x5D4_hitboxes[0].hit.scale;
+    }
     ip->on_accessory = fn_802C5E18;
     ip->xDD4_itemVar.mewtwoshadowball.x50 =
         0.5F * ((f32) ip->xDD4_itemVar.mewtwoshadowball.x18 /
@@ -510,8 +531,16 @@ bool itMewtwoshadowball_UnkMotion8_Anim(Item_GObj* gobj)
     HSD_JObj* jobj = itGetJObjGrandchild(gobj);
     u8 _pad[8];
     Vec3 scale;
-    scale.x = scale.y = scale.z = ip->xDD4_itemVar.mewtwoshadowball.x10;
+    float growth = itMewtwoShadowball_GetGrowth(ip);
+    scale.x = scale.y = scale.z =
+        ip->xDD4_itemVar.mewtwoshadowball.x10 * growth;
     HSD_JObjSetScale(jobj, &scale);
+    if (ip->kind == It_Kind_Mewtwo_ShadowBall &&
+        ip->x5D4_hitboxes[0].hit.state != HitCapsule_Disabled)
+    {
+        ip->x5D4_hitboxes[0].hit.scale =
+            ip->xDD4_itemVar.mewtwoshadowball.x64 * growth;
+    }
     return it_80273130(gobj);
 }
 

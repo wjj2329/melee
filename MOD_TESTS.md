@@ -99,6 +99,20 @@ overlapping any files in the disc filesystem.
   loss.
 - Select regular Link and confirm his bombs retain normal size and blast range.
 
+## Mewtwo
+
+- Fire uncharged, partially charged, and fully charged Shadow Balls; confirm
+  each grows continuously while traveling and stops growing at a finite cap.
+- Confirm the damaging hitbox expands with the visible ball rather than
+  remaining at its original size.
+- Test hits against grounded and airborne opponents, shields, walls, floors,
+  slopes, and stage edges at several different growth sizes.
+- Reflect and shield-bounce growing Shadow Balls and confirm they continue to
+  travel and grow correctly.
+- Fire at least 30 Shadow Balls in succession and test again after a stock
+  loss.
+- Use Kirby's copied Shadow Ball and confirm it retains retail size behavior.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does

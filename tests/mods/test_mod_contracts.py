@@ -235,5 +235,41 @@ class YoungLinkGiantBombContractTests(unittest.TestCase):
         )
 
 
+class MewtwoGrowingShadowBallContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source("src/melee/it/kinds/itmewtwoshadowball.c")
+
+    def test_growth_is_guarded_to_mewtwo_not_kirby(self) -> None:
+        self.assertGreaterEqual(
+            self.code.count("ip->kind == It_Kind_Mewtwo_ShadowBall"), 3
+        )
+        self.assertIn("It_Kind_Kirby_MewtwoShadowBall", self.code)
+
+    def test_growth_is_time_based_and_safely_capped(self) -> None:
+        self.assertIn(
+            "IT_MEWTWO_SHADOWBALL_GROWTH_PER_FRAME 0.04f", self.code
+        )
+        self.assertIn("IT_MEWTWO_SHADOWBALL_MAX_GROWTH 4.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"growth \+= ip->xDD4_itemVar\.mewtwoshadowball\.x4C \*",
+        )
+        self.assertRegex(
+            self.code,
+            r"if \(growth > IT_MEWTWO_SHADOWBALL_MAX_GROWTH\)",
+        )
+
+    def test_visual_and_hitbox_use_the_same_growth(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"mewtwoshadowball\.x10 \* growth",
+        )
+        self.assertRegex(
+            self.code,
+            r"mewtwoshadowball\.x64 \* growth",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
