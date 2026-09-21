@@ -114,6 +114,19 @@ overlapping any files in the disc filesystem.
   loss.
 - Use Kirby's copied Shadow Ball and confirm it retains retail size behavior.
 
+## Yoshi
+
+- Catch an opposing fighter with grounded and aerial Egg Lay; confirm exactly
+  one ReDead appears just behind Yoshi for each successful catch.
+- Whiff Egg Lay and catch an item; confirm neither action spawns a ReDead.
+- Spawn three ReDeads, then catch another fighter; confirm the active ReDead
+  count remains capped at three.
+- Defeat or remove one ReDead, catch another fighter, and confirm a replacement
+  can spawn.
+- Test near platforms, slopes, walls, and stage edges; confirm the ReDead falls
+  onto valid ground or safely leaves the stage.
+- Use Kirby's copied Egg Lay and confirm it does not spawn a ReDead.
+
 ## Current limitation
 
 The automated suite validates code contracts and binary packaging, but it does

@@ -281,5 +281,39 @@ class MewtwoGrowingShadowBallContractTests(unittest.TestCase):
         )
 
 
+class YoshiRedeadLickContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source("src/melee/ft/kinds/ftYoshi/ftyoshispecialn.c")
+
+    def test_spawn_is_guarded_to_regular_yoshi_and_bounded(self) -> None:
+        self.assertIn("fp->kind != Ft_Kind_Yoshi", self.code)
+        self.assertIn("FT_YOSHI_REDEAD_LIMIT 3", self.code)
+        self.assertRegex(
+            self.code,
+            r"it_8026B3C0\(It_Kind_Leadead\) >= FT_YOSHI_REDEAD_LIMIT",
+        )
+
+    def test_native_redead_spawner_is_used_behind_yoshi(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"pos\.x -= fp->facing_dir \* FT_YOSHI_REDEAD_SPAWN_OFFSET",
+        )
+        self.assertRegex(self.code, r"it_802EA9FC\(&pos,")
+
+    def test_only_successful_fighter_catch_callbacks_spawn(self) -> None:
+        self.assertEqual(self.code.count("ftYs_SpecialN_SpawnRedead(gobj);"), 2)
+        self.assertRegex(
+            self.code,
+            r"void fn_8012CF7C\(HSD_GObj\* gobj\)[\s\S]*?"
+            r"ftYs_SpecialN_SpawnRedead\(gobj\);",
+        )
+        self.assertRegex(
+            self.code,
+            r"void fn_8012D0A0\(Fighter_GObj\* gobj\)[\s\S]*?"
+            r"ftYs_SpecialN_SpawnRedead\(gobj\);",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

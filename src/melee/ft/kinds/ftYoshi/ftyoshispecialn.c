@@ -24,6 +24,8 @@
 #include <melee/ft/types.h>
 #include <melee/it/kinds/ityoshiegglay.h>
 #include <melee/it/kinds/ityoshitongue.h>
+#include <melee/it/kinds/itleadead.h>
+#include <melee/it/it_26B1.h>
 #include <melee/lb/lb_00B0.h>
 #include <sysdolphin/baselib/gobj.h>
 
@@ -142,6 +144,24 @@ static u32 const motion_flags2 = motion_flags1 | Ft_MF_KeepGfx |
                                  Ft_MF_SkipModel | Ft_MF_SkipMatAnim |
                                  Ft_MF_SkipColAnim | Ft_MF_Unk19;
 
+#define FT_YOSHI_REDEAD_LIMIT 3
+#define FT_YOSHI_REDEAD_SPAWN_OFFSET 10.0f
+
+static void ftYs_SpecialN_SpawnRedead(Fighter_GObj* gobj)
+{
+    Fighter* fp = GET_FIGHTER(gobj);
+    Vec3 pos;
+
+    if (fp->kind != Ft_Kind_Yoshi ||
+        it_8026B3C0(It_Kind_Leadead) >= FT_YOSHI_REDEAD_LIMIT)
+    {
+        return;
+    }
+    pos = fp->cur_pos;
+    pos.x -= fp->facing_dir * FT_YOSHI_REDEAD_SPAWN_OFFSET;
+    it_802EA9FC(&pos, fp->facing_dir == -1.0f ? -1 : 1);
+}
+
 void ftYs_SpecialN_Enter(HSD_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
@@ -178,6 +198,7 @@ void fn_8012CEE0(Fighter_GObj* gobj)
 void fn_8012CF7C(HSD_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
+    ftYs_SpecialN_SpawnRedead(gobj);
     Fighter_ChangeMotionState(gobj, ftYs_MS_SpecialN1_0, motion_flags1,
                               fp->cur_anim_frame, 1.0f, 0.0f, NULL);
     fp->x2222_b2 = true;
@@ -205,6 +226,7 @@ void fn_8012D0A0(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
 
+    ftYs_SpecialN_SpawnRedead(gobj);
     Fighter_ChangeMotionState(gobj, ftYs_MS_SpecialAirN1_1, motion_flags2,
                               fp->cur_anim_frame, 1.0f, 0.0f, NULL);
 
