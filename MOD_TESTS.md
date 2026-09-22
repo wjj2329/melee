@@ -163,14 +163,15 @@ overlapping any files in the disc filesystem.
 ## Kirby
 
 - Start repeated normal VS matches with Kirby; confirm each match loads normally
-  and taunting grants one copy ability selected from the full playable cast.
+  and prepares six unique copy abilities selected from the full playable cast.
 - Confirm the granted ability has its matching hat and that its neutral-B works;
   this verifies the preloaded file was also parsed into Kirby's runtime table.
 - Repeat with several Kirby costume colors and confirm each one receives the
   correctly colored copy hat rather than silently keeping no ability.
-- Confirm repeated taunts within one match consistently grant that match's
-  selected ability, while starting new matches produces varied abilities that
-  do not need to match an opponent.
+- Confirm every completed taunt randomly grants a different ability from the
+  current six-ability pool, never immediately repeating the current copy.
+- Start new matches and confirm the six-ability pool changes, allowing every
+  playable character's copy ability to appear across matches.
 - Confirm repeated taunts never grant Kirby's, Nana's, or a boss character's
   invalid/nonexistent copy ability.
 - Interrupt Kirby's taunt with an attack; confirm he loses his previous copy

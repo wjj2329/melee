@@ -4072,18 +4072,36 @@ void ftKb_SpecialN_AssignRandomLoadedCopy(Fighter_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
     HSD_Archive** archives = (HSD_Archive**) &ft_80459B88;
-    CharacterKind copy_kind = lbDvd_GetMysteryCopyKind();
+    CharacterKind copy_kind;
+    int available = 0;
+    int count = lbDvd_GetMysteryCopyCount();
+    int i;
+    int selected;
     FighterKind kind;
 
-    if (copy_kind == ChKind_None) {
+    for (i = 0; i < count; i++) {
+        copy_kind = lbDvd_GetMysteryCopyKind(i);
+        kind = Player_800325C8(copy_kind, false);
+        if (kind != fp->u.kb.hat.kind) {
+            available++;
+        }
+    }
+    if (available == 0) {
         return;
     }
-    kind = Player_800325C8(copy_kind, false);
-    ftKb_SpecialN_800EED50(kind, fp->x619_costume_id);
-    if (ftKb_Init_803CA9D0[kind].filename != NULL &&
-        archives[kind] != NULL)
-    {
-        ftKb_SpecialN_800F1BAC(gobj, kind, true);
+    selected = HSD_Randi(available);
+    for (i = 0; i < count; i++) {
+        copy_kind = lbDvd_GetMysteryCopyKind(i);
+        kind = Player_800325C8(copy_kind, false);
+        if (kind != fp->u.kb.hat.kind && selected-- == 0) {
+            ftKb_SpecialN_800EED50(kind, fp->x619_costume_id);
+            if (ftKb_Init_803CA9D0[kind].filename != NULL &&
+                archives[kind] != NULL)
+            {
+                ftKb_SpecialN_800F1BAC(gobj, kind, true);
+            }
+            return;
+        }
     }
 }
 

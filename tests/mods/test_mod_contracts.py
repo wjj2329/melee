@@ -425,30 +425,34 @@ class KirbyRandomTauntCopyContractTests(unittest.TestCase):
             r"ftKb_SpecialN_AssignRandomLoadedCopy\(gobj\);",
         )
 
-    def test_one_random_playable_copy_is_preloaded_per_match(self) -> None:
-        self.assertRegex(
-            self.preload_code,
-            r"HSD_Randi\(CKind_Playable_Count - 1\);",
-        )
+    def test_bounded_random_copy_pool_is_preloaded_per_match(self) -> None:
+        self.assertIn("LBDVD_MYSTERY_COPY_COUNT 6", self.preload_code)
         self.assertNotIn("kind < ChKind_Max", self.preload_code)
-        self.assertIn("Player_80031D2C(lbDvd_mystery_copy_kind", self.preload_code)
+        self.assertIn("selected = j + HSD_Randi(candidate_count - j)", self.preload_code)
+        self.assertIn("Player_80031D2C(lbDvd_mystery_copy_kinds[j]", self.preload_code)
 
     def test_random_preload_skips_kirby(self) -> None:
         self.assertRegex(
             self.preload_code,
-            r"mystery_copy_kind >= CKind_Kirby\) \{\s*"
-            r"lbDvd_mystery_copy_kind\+\+;",
+            r"kind < CKind_Playable_Count; kind\+\+\) \{\s*"
+            r"if \(kind != CKind_Kirby\)",
         )
 
     def test_taunt_uses_the_exact_preloaded_copy(self) -> None:
-        self.assertIn("lbDvd_GetMysteryCopyKind()", self.kirby_code)
+        self.assertIn("lbDvd_GetMysteryCopyKind(i)", self.kirby_code)
         self.assertIn("Player_800325C8(copy_kind, false)", self.kirby_code)
         self.assertIn("archives[kind] != NULL", self.kirby_code)
+
+    def test_repeated_taunts_cannot_repeat_the_current_copy(self) -> None:
+        self.assertGreaterEqual(
+            self.kirby_code.count("kind != fp->u.kb.hat.kind"), 2
+        )
+        self.assertIn("selected = HSD_Randi(available)", self.kirby_code)
 
     def test_random_copy_is_parsed_for_the_active_kirby_costume(self) -> None:
         self.assertRegex(
             self.kirby_code,
-            r"kind = Player_800325C8\(copy_kind, false\);\s*"
+            r"if \(kind != fp->u.kb.hat.kind && selected-- == 0\) \{\s*"
             r"ftKb_SpecialN_800EED50\(kind, fp->x619_costume_id\);\s*"
             r"if \(ftKb_Init_803CA9D0\[kind\]\.filename != NULL",
         )

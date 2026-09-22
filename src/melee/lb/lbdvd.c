@@ -18,11 +18,28 @@
 
 /* 0189EC */ static void lbDvd_800189EC(int);
 
-static CharacterKind lbDvd_mystery_copy_kind = ChKind_None;
+#define LBDVD_MYSTERY_COPY_COUNT 6
 
-CharacterKind lbDvd_GetMysteryCopyKind(void)
+static CharacterKind
+    lbDvd_mystery_copy_kinds[LBDVD_MYSTERY_COPY_COUNT] = {
+        ChKind_None, ChKind_None, ChKind_None,
+        ChKind_None, ChKind_None, ChKind_None,
+    };
+
+int lbDvd_GetMysteryCopyCount(void)
 {
-    return lbDvd_mystery_copy_kind;
+    if (lbDvd_mystery_copy_kinds[0] == ChKind_None) {
+        return 0;
+    }
+    return LBDVD_MYSTERY_COPY_COUNT;
+}
+
+CharacterKind lbDvd_GetMysteryCopyKind(int index)
+{
+    if (index < 0 || index >= lbDvd_GetMysteryCopyCount()) {
+        return ChKind_None;
+    }
+    return lbDvd_mystery_copy_kinds[index];
 }
 
 void lbDvd_SetupVsPreloadCache(void)
@@ -185,7 +202,9 @@ void lbDvd_80017960(void)
 {
     struct GameCache* game_cache = &preloadCache.new_scene.game_cache;
     int i;
+    int j;
     bool mystery_copy_selected = false;
+    CharacterKind candidates[CKind_Playable_Count - 1];
     u8 _[4];
 
     if (preloadCache.new_scene.game_cache.mode_kind != GM_COUNT) {
@@ -207,15 +226,26 @@ void lbDvd_80017960(void)
         }
         if (game_cache->entries[i].char_id == CKind_Kirby) {
             if (!mystery_copy_selected) {
-                lbDvd_mystery_copy_kind =
-                    HSD_Randi(CKind_Playable_Count - 1);
-                if (lbDvd_mystery_copy_kind >= CKind_Kirby) {
-                    lbDvd_mystery_copy_kind++;
+                CharacterKind kind;
+                int candidate_count = 0;
+                for (kind = 0; kind < CKind_Playable_Count; kind++) {
+                    if (kind != CKind_Kirby) {
+                        candidates[candidate_count++] = kind;
+                    }
+                }
+                for (j = 0; j < LBDVD_MYSTERY_COPY_COUNT; j++) {
+                    int selected = j + HSD_Randi(candidate_count - j);
+                    CharacterKind swap = candidates[j];
+                    candidates[j] = candidates[selected];
+                    candidates[selected] = swap;
+                    lbDvd_mystery_copy_kinds[j] = candidates[j];
                 }
                 mystery_copy_selected = true;
             }
-            Player_80031D2C(lbDvd_mystery_copy_kind,
-                            game_cache->entries[i].color);
+            for (j = 0; j < LBDVD_MYSTERY_COPY_COUNT; j++) {
+                Player_80031D2C(lbDvd_mystery_copy_kinds[j],
+                                game_cache->entries[i].color);
+            }
         }
     }
 }
