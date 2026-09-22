@@ -14,8 +14,16 @@
 #include <melee/gr/stage.h>
 #include <melee/pl/player.h>
 #include <sysdolphin/baselib/debug.h>
+#include <sysdolphin/baselib/random.h>
 
 /* 0189EC */ static void lbDvd_800189EC(int);
+
+static CharacterKind lbDvd_mystery_copy_kind = ChKind_None;
+
+CharacterKind lbDvd_GetMysteryCopyKind(void)
+{
+    return lbDvd_mystery_copy_kind;
+}
 
 void lbDvd_SetupVsPreloadCache(void)
 {
@@ -177,6 +185,7 @@ void lbDvd_80017960(void)
 {
     struct GameCache* game_cache = &preloadCache.new_scene.game_cache;
     int i;
+    bool mystery_copy_selected = false;
     u8 _[4];
 
     if (preloadCache.new_scene.game_cache.mode_kind != GM_COUNT) {
@@ -197,10 +206,16 @@ void lbDvd_80017960(void)
                             game_cache->entries[i].color);
         }
         if (game_cache->entries[i].char_id == CKind_Kirby) {
-            CharacterKind kind;
-            for (kind = 0; kind < ChKind_Max; kind++) {
-                Player_80031D2C(kind, game_cache->entries[i].color);
+            if (!mystery_copy_selected) {
+                lbDvd_mystery_copy_kind =
+                    HSD_Randi(CKind_Playable_Count - 1);
+                if (lbDvd_mystery_copy_kind >= CKind_Kirby) {
+                    lbDvd_mystery_copy_kind++;
+                }
+                mystery_copy_selected = true;
             }
+            Player_80031D2C(lbDvd_mystery_copy_kind,
+                            game_cache->entries[i].color);
         }
     }
 }

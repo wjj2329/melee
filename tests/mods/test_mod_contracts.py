@@ -382,21 +382,25 @@ class KirbyRandomTauntCopyContractTests(unittest.TestCase):
             r"ftKb_SpecialN_AssignRandomLoadedCopy\(gobj\);",
         )
 
-    def test_random_pool_contains_only_preloaded_valid_copy_archives(self) -> None:
-        self.assertGreaterEqual(
-            self.kirby_code.count("ftKb_Init_803CA9D0[kind].filename != NULL"),
-            2,
-        )
-        self.assertGreaterEqual(self.kirby_code.count("archives[kind] != NULL"), 2)
-        self.assertIn("selected = HSD_Randi(available);", self.kirby_code)
-
-    def test_kirby_preloads_the_entire_copy_roster_for_every_match(self) -> None:
+    def test_one_random_playable_copy_is_preloaded_per_match(self) -> None:
         self.assertRegex(
             self.preload_code,
-            r"char_id == CKind_Kirby\) \{\s*CharacterKind kind;\s*"
-            r"for \(kind = 0; kind < ChKind_Max; kind\+\+\) \{\s*"
-            r"Player_80031D2C\(kind, game_cache->entries\[i\]\.color\);",
+            r"HSD_Randi\(CKind_Playable_Count - 1\);",
         )
+        self.assertNotIn("kind < ChKind_Max", self.preload_code)
+        self.assertIn("Player_80031D2C(lbDvd_mystery_copy_kind", self.preload_code)
+
+    def test_random_preload_skips_kirby(self) -> None:
+        self.assertRegex(
+            self.preload_code,
+            r"mystery_copy_kind >= CKind_Kirby\) \{\s*"
+            r"lbDvd_mystery_copy_kind\+\+;",
+        )
+
+    def test_taunt_uses_the_exact_preloaded_copy(self) -> None:
+        self.assertIn("lbDvd_GetMysteryCopyKind()", self.kirby_code)
+        self.assertIn("Player_800325C8(copy_kind, false)", self.kirby_code)
+        self.assertIn("archives[kind] != NULL", self.kirby_code)
 
     def test_assignment_uses_the_normal_copy_state_path(self) -> None:
         self.assertRegex(

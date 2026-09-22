@@ -4071,28 +4071,17 @@ void ftKb_SpecialN_800F1BAC(Fighter_GObj* gobj, s32 kind, bool arg2)
 void ftKb_SpecialN_AssignRandomLoadedCopy(Fighter_GObj* gobj)
 {
     HSD_Archive** archives = (HSD_Archive**) &ft_80459B88;
-    s32 available = 0;
-    s32 selected;
+    CharacterKind copy_kind = lbDvd_GetMysteryCopyKind();
     FighterKind kind;
 
-    for (kind = Ft_Kind_Mario; kind <= Ft_Kind_Emblem; kind++) {
-        if (ftKb_Init_803CA9D0[kind].filename != NULL &&
-            archives[kind] != NULL)
-        {
-            available++;
-        }
-    }
-    if (available == 0) {
+    if (copy_kind == ChKind_None) {
         return;
     }
-    selected = HSD_Randi(available);
-    for (kind = Ft_Kind_Mario; kind <= Ft_Kind_Emblem; kind++) {
-        if (ftKb_Init_803CA9D0[kind].filename != NULL &&
-            archives[kind] != NULL && selected-- == 0)
-        {
-            ftKb_SpecialN_800F1BAC(gobj, kind, true);
-            return;
-        }
+    kind = Player_800325C8(copy_kind, false);
+    if (ftKb_Init_803CA9D0[kind].filename != NULL &&
+        archives[kind] != NULL)
+    {
+        ftKb_SpecialN_800F1BAC(gobj, kind, true);
     }
 }
 

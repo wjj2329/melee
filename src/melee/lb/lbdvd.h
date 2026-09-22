@@ -2,6 +2,7 @@
 #define GALE01_0174BC
 
 #include <melee/lb/forward.h>
+#include <melee/ft/forward.h>
 #include <sysdolphin/baselib/forward.h>
 
 typedef void (*lbDvd_Callback)(int, int index, int, int);
@@ -18,6 +19,7 @@ typedef void (*lbDvd_Callback)(int, int index, int, int);
 /* 0178E8 */ void lbDvd_800178E8(int, const char* name, int, int, int, int,
                                  int, u8, int);
 /* 017960 */ void lbDvd_80017960(void);
+CharacterKind lbDvd_GetMysteryCopyKind(void);
 /* 017AB0 */ void lbDvd_CachePreloadedFile(s32 index);
 /* 017CC4 */ void lbDvd_80017CC4(void);
 /* 017E64 */ void lbDvd_80017E64(int, int, void*, bool);

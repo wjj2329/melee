@@ -148,11 +148,11 @@ overlapping any files in the disc filesystem.
 
 ## Kirby
 
-- Complete repeated taunts in a normal VS match; confirm Kirby receives varied
-  copy abilities and the matching hats at taunt completion. Normal VS preloads
-  Kirby's complete valid copy roster, so the result need not match an opponent.
-- In a one-on-one match, confirm repeated taunts grant several abilities from
-  fighters who are not participating in the match.
+- Start repeated normal VS matches with Kirby; confirm each match loads normally
+  and taunting grants one copy ability selected from the full playable cast.
+- Confirm repeated taunts within one match consistently grant that match's
+  selected ability, while starting new matches produces varied abilities that
+  do not need to match an opponent.
 - Confirm repeated taunts never grant Kirby's, Nana's, or a boss character's
   invalid/nonexistent copy ability.
 - Interrupt Kirby's taunt with an attack; confirm he loses his previous copy
