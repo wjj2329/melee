@@ -40,8 +40,8 @@ overlapping any files in the disc filesystem.
 ## Pikachu
 
 - Use down-B with the Thunder column aligned over Pikachu and confirm that the
-  move enters its normal self-hit state, then triggers the Super Mushroom growth
-  animation.
+  move enters its normal self-hit state, finishes its ending animation, then
+  triggers the Super Mushroom growth animation.
 - Miss Pikachu with Thunder and confirm he remains normal size.
 - While giant, verify movement, attacks, hitboxes, shield, grabs, ledges, and
   knockback behave like the native Super Mushroom state.

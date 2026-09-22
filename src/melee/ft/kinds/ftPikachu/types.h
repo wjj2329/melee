@@ -98,6 +98,7 @@ union ftPikachu_MotionVars {
     struct ftPikachu_SpecialLwVars {
         Item_GObj* x0;
         bool x4;
+        bool grow_on_end;
     } speciallw;
 };
 

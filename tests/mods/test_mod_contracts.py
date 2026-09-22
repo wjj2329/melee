@@ -61,14 +61,27 @@ class PikachuThunderGrowthContractTests(unittest.TestCase):
             self.code,
             r"if \(\(final_y_pos < pika_attr->xC8\)[\s\S]*?"
             r"it_802B1FC8\(fp->mv.pk.speciallw.x0\);[\s\S]*?"
-            r"fp->x200C\+\+;[\s\S]*?return true;",
+            r"grow_on_end = true;[\s\S]*?return true;",
         )
 
     def test_only_regular_pikachu_receives_the_growth_event(self) -> None:
         self.assertRegex(
             self.code,
-            r"if \(fp->kind == Ft_Kind_Pikachu\) \{\s*fp->x200C\+\+;\s*\}",
+            r"if \(fp->kind == Ft_Kind_Pikachu\) \{\s*"
+            r"fp->mv.pk.speciallw.grow_on_end = true;\s*\}",
         )
+
+    def test_growth_is_deferred_until_thunder_returns_to_wait_or_fall(self) -> None:
+        for function in (
+            "ftPk_SpecialLwEnd_Anim",
+            "ftPk_SpecialAirLwEnd_Anim",
+        ):
+            self.assertRegex(
+                self.code,
+                rf"void {function}\(HSD_GObj\* gobj\)[\s\S]*?"
+                r"if \(fp->mv.pk.speciallw.grow_on_end\) \{\s*"
+                r"fp->x200C\+\+;",
+            )
 
     def test_uses_the_native_deferred_super_mushroom_event(self) -> None:
         fighter_code = source("src/melee/ft/fighter.c")

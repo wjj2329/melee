@@ -84,7 +84,7 @@ bool ftPk_SpecialLw_8012765C(HSD_GObj* gobj)
         {
             it_802B1FC8(fp->mv.pk.speciallw.x0);
             if (fp->kind == Ft_Kind_Pikachu) {
-                fp->x200C++;
+                fp->mv.pk.speciallw.grow_on_end = true;
             }
             return true;
         }
@@ -139,6 +139,7 @@ void ftPk_SpecialLw_Enter(HSD_GObj* gobj)
     fp->throw_flags = 0;
     fp->mv.pk.specialhi.x4 = 1;
     fp->mv.pk.specialhi.x0 = 0;
+    fp->mv.pk.speciallw.grow_on_end = false;
     Fighter_ChangeMotionState(gobj, 359, 0, 0.0f, 1.0f, 0.0f, 0);
     ftAnim_8006EBA4(gobj);
 }
@@ -150,6 +151,7 @@ void ftPk_SpecialAirLw_Enter(HSD_GObj* gobj)
     fp->throw_flags = 0;
     fp->mv.pk.specialhi.x4 = 1;
     fp->mv.pk.specialhi.x0 = 0;
+    fp->mv.pk.speciallw.grow_on_end = false;
     Fighter_ChangeMotionState(gobj, 363, 0, 0.0f, 1.0f, 0.0f, 0);
     ftAnim_8006EBA4(gobj);
 }
@@ -311,6 +313,10 @@ void ftPk_SpecialAirLwLoop1_Anim(HSD_GObj* gobj)
 void ftPk_SpecialLwEnd_Anim(HSD_GObj* gobj)
 {
     if (!ftAnim_IsFramesRemaining(gobj)) {
+        Fighter* fp = GET_FIGHTER(gobj);
+        if (fp->mv.pk.speciallw.grow_on_end) {
+            fp->x200C++;
+        }
         ft_8008A2BC(gobj);
     }
 }
@@ -318,6 +324,10 @@ void ftPk_SpecialLwEnd_Anim(HSD_GObj* gobj)
 void ftPk_SpecialAirLwEnd_Anim(HSD_GObj* gobj)
 {
     if (!ftAnim_IsFramesRemaining(gobj)) {
+        Fighter* fp = GET_FIGHTER(gobj);
+        if (fp->mv.pk.speciallw.grow_on_end) {
+            fp->x200C++;
+        }
         ftCo_Fall_Enter(gobj);
     }
 }
