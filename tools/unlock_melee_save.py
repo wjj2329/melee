@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect or unlock the roster in a North American Melee GCI save.
+"""Inspect or unlock content in a North American Melee GCI save.
 
 Melee stores its logical files in checksummed, obfuscated 0x2000-byte blocks.
 This tool edits both redundant copies of logical file 1 (the 0x1790-byte
@@ -18,6 +18,9 @@ GCI_HEADER_SIZE = 0x40
 CHECKSUM_SEED = bytes.fromhex("0123456789ABCDEFFEDCBA9876543210")
 ENCODE_LUT = (0x26, 0xFF, 0xE8, 0xEF, 0x42, 0xD6, 0x01,
               0x54, 0x14, 0xA3, 0x80, 0xFD, 0x6E)
+ROSTER_MASK_OFFSET = 0x20
+STAGE_MASK_OFFSET = 0x22
+ALL_UNLOCKABLES_MASK = 0x07FF
 
 
 def _permute(value: int, shifts: tuple[int, ...]) -> int:
@@ -111,15 +114,23 @@ def main() -> None:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--backup", type=Path)
     parser.add_argument("--inspect", action="store_true")
+    parser.add_argument("--unlock-roster", action="store_true")
+    parser.add_argument("--unlock-stages", action="store_true")
     args = parser.parse_args()
 
     original = args.input.read_bytes()
     blocks = find_global_save_blocks(original)
     print(f"global save blocks: {len(blocks)}")
     for offset, decoded in blocks:
-        mask = int.from_bytes(decoded[0x20:0x22], "big")
+        roster_mask = int.from_bytes(
+            decoded[ROSTER_MASK_OFFSET:ROSTER_MASK_OFFSET + 2], "big"
+        )
+        stage_mask = int.from_bytes(
+            decoded[STAGE_MASK_OFFSET:STAGE_MASK_OFFSET + 2], "big"
+        )
         print(f"  file offset 0x{offset:X}, sequence {decoded[0x12]}, "
-              f"roster mask 0x{mask:04X}")
+              f"roster mask 0x{roster_mask:04X}, "
+              f"stage mask 0x{stage_mask:04X}")
 
     if args.inspect:
         return
@@ -128,11 +139,26 @@ def main() -> None:
     if len(blocks) != 2:
         raise ValueError(f"expected two redundant global-save blocks, found {len(blocks)}")
 
+    # Preserve the original command-line behavior when neither explicit
+    # unlock option is provided.
+    unlock_roster = args.unlock_roster or not args.unlock_stages
+
     modified = bytearray(original)
     for offset, decoded in blocks:
-        # All eleven unlockable-character bits. Higher bits remain untouched.
-        old_mask = int.from_bytes(decoded[0x20:0x22], "big")
-        decoded[0x20:0x22] = (old_mask | 0x07FF).to_bytes(2, "big")
+        if unlock_roster:
+            old_mask = int.from_bytes(
+                decoded[ROSTER_MASK_OFFSET:ROSTER_MASK_OFFSET + 2], "big"
+            )
+            decoded[ROSTER_MASK_OFFSET:ROSTER_MASK_OFFSET + 2] = (
+                old_mask | ALL_UNLOCKABLES_MASK
+            ).to_bytes(2, "big")
+        if args.unlock_stages:
+            old_mask = int.from_bytes(
+                decoded[STAGE_MASK_OFFSET:STAGE_MASK_OFFSET + 2], "big"
+            )
+            decoded[STAGE_MASK_OFFSET:STAGE_MASK_OFFSET + 2] = (
+                old_mask | ALL_UNLOCKABLES_MASK
+            ).to_bytes(2, "big")
         encoded = encode_block(decoded)
         # The stored checksum at [0:16] must change with the payload, so compare
         # the decoded header and payload rather than the stale incoming checksum.
@@ -151,8 +177,16 @@ def main() -> None:
     if len(verified_blocks) != 2:
         raise AssertionError("written save failed block verification")
     for _, decoded in verified_blocks:
-        if int.from_bytes(decoded[0x20:0x22], "big") & 0x07FF != 0x07FF:
+        roster_mask = int.from_bytes(
+            decoded[ROSTER_MASK_OFFSET:ROSTER_MASK_OFFSET + 2], "big"
+        )
+        stage_mask = int.from_bytes(
+            decoded[STAGE_MASK_OFFSET:STAGE_MASK_OFFSET + 2], "big"
+        )
+        if unlock_roster and roster_mask & ALL_UNLOCKABLES_MASK != ALL_UNLOCKABLES_MASK:
             raise AssertionError("written save does not contain the full roster mask")
+        if args.unlock_stages and stage_mask & ALL_UNLOCKABLES_MASK != ALL_UNLOCKABLES_MASK:
+            raise AssertionError("written save does not contain the full stage mask")
     print(f"wrote verified unlocked save: {args.output}")
 
 
