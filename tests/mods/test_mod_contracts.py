@@ -122,6 +122,36 @@ class BowserHelicopterContractTests(unittest.TestCase):
         )
 
 
+class GameWatchBucketRocketContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.init_code = source(
+            "src/melee/ft/kinds/ftGameWatch/ftgamewatch.c"
+        )
+        cls.bucket_code = source(
+            "src/melee/ft/kinds/ftGameWatch/ftgamewatchspeciallw.c"
+        )
+
+    def test_game_watch_starts_with_a_larger_shield(self) -> None:
+        self.assertIn("fp->co_attrs.initial_shield_size *= 1.6f", self.init_code)
+
+    def test_aerial_bucket_release_uses_normalized_stick_direction(self) -> None:
+        self.assertIn("fp->input.lstick[0].x", self.bucket_code)
+        self.assertIn("fp->input.lstick[0].y", self.bucket_code)
+        self.assertIn("lbVector_Normalize(&direction)", self.bucket_code)
+        self.assertIn("FTGW_BUCKET_ROCKET_SPEED 3.0f", self.bucket_code)
+
+    def test_neutral_release_defaults_backward_and_upward(self) -> None:
+        self.assertIn("direction.x = -fp->facing_dir", self.bucket_code)
+        self.assertIn("direction.y = 0.75f", self.bucket_code)
+
+    def test_grounded_release_does_not_get_airborne_rocket_velocity(self) -> None:
+        ground_release = self.bucket_code.split(
+            "void ftGw_SpecialLwShoot_ReleaseOil", 1
+        )[1].split("void ftGw_SpecialAirLwShoot_ReleaseOil", 1)[0]
+        self.assertNotIn("ApplyRocket", ground_release)
+
+
 class PuffFlyingKaraokeContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

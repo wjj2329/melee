@@ -59,6 +59,21 @@ overlapping any files in the disc filesystem.
 - Repeat aerial up-B at least 20 times, including after a stock loss.
 - Confirm grounded up-B retains its normal movement and behavior.
 
+## Mr. Game & Watch
+
+- At full shield health, shield next to attacks aimed at his head and feet;
+  confirm the larger bubble and its collision coverage agree.
+- Shrink the shield by holding it and confirm its visual and collision size
+  decrease normally from the larger starting radius.
+- Fill Oil Panic, jump, and release with neutral stick; confirm Game & Watch
+  launches diagonally backward and upward while the oil attack remains active.
+- Repeat aerial releases while holding each cardinal and diagonal stick
+  direction; confirm the launch follows the stick at a consistent speed.
+- Release a full bucket while grounded and confirm it retains retail grounded
+  movement instead of unexpectedly launching upward.
+- Lose a stock after both shielding and using the bucket rocket; confirm the
+  larger shield returns and no launch velocity or bucket state persists.
+
 ## Jigglypuff
 
 - Use Sing in the air and confirm Puff rises slowly throughout the move.

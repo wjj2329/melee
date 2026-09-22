@@ -20,6 +20,30 @@
 #include <melee/ft/types.h>
 #include <melee/it/kinds/itgamewatchpanic.h>
 #include <melee/lb/lb_00B0.h>
+#include <melee/lb/lbvector.h>
+
+#define FTGW_BUCKET_ROCKET_SPEED 3.0f
+#define FTGW_BUCKET_ROCKET_DEADZONE_SQ 0.09f
+
+static void ftGw_SpecialAirLwShoot_ApplyRocket(Fighter* fp)
+{
+    Vec3 direction;
+
+    direction.x = fp->input.lstick[0].x;
+    direction.y = fp->input.lstick[0].y;
+    direction.z = 0.0f;
+
+    if (direction.x * direction.x + direction.y * direction.y <
+        FTGW_BUCKET_ROCKET_DEADZONE_SQ)
+    {
+        direction.x = -fp->facing_dir;
+        direction.y = 0.75f;
+    }
+
+    lbVector_Normalize(&direction);
+    fp->self_vel.x = direction.x * FTGW_BUCKET_ROCKET_SPEED;
+    fp->self_vel.y = direction.y * FTGW_BUCKET_ROCKET_SPEED;
+}
 
 /// Create Oil Panic Item
 void ftGw_SpecialLw_ItemPanicSetup(HSD_GObj* gobj)
@@ -705,6 +729,8 @@ void ftGw_SpecialAirLwShoot_ReleaseOil(HSD_GObj* gobj)
 
     {
         Fighter* fp = GET_FIGHTER(gobj);
+
+        ftGw_SpecialAirLwShoot_ApplyRocket(fp);
 
         {
             ftGameWatchAttributes* sa = getFtSpecialAttrs(fp);

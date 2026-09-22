@@ -530,6 +530,7 @@ void ftGw_Init_OnLoad(HSD_GObj* gobj)
 
     PUSH_ATTRS(fp, ftGameWatchAttributes);
     fp->u.gw.x2238_panicCharge = ftGw_Panic_Empty;
+    fp->co_attrs.initial_shield_size *= 1.6f;
 
     {
         ftGameWatchAttributes* da = fp->dat_attrs;
