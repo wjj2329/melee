@@ -2799,7 +2799,13 @@ void ftKb_SpecialN_800EED50(s32 arg0, s32 arg1)
 
 void ftKb_Init_UnkMotionStates5(void)
 {
+    CharacterKind copy_kind;
+
     Player_80031DC8(ftKb_SpecialN_800EED50);
+    copy_kind = lbDvd_GetMysteryCopyKind();
+    if (copy_kind != ChKind_None) {
+        ftKb_SpecialN_800EED50(Player_800325C8(copy_kind, false), 0);
+    }
 }
 
 void ftKb_SpecialN_800EEEC4(HSD_GObj* gobj, FighterKind kind)

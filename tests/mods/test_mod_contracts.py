@@ -402,6 +402,14 @@ class KirbyRandomTauntCopyContractTests(unittest.TestCase):
         self.assertIn("Player_800325C8(copy_kind, false)", self.kirby_code)
         self.assertIn("archives[kind] != NULL", self.kirby_code)
 
+    def test_random_copy_is_parsed_into_kirbys_runtime_archive_table(self) -> None:
+        self.assertRegex(
+            self.kirby_code,
+            r"void ftKb_Init_UnkMotionStates5\(void\)[\s\S]*?"
+            r"copy_kind = lbDvd_GetMysteryCopyKind\(\);[\s\S]*?"
+            r"ftKb_SpecialN_800EED50\(Player_800325C8\(copy_kind, false\), 0\);",
+        )
+
     def test_assignment_uses_the_normal_copy_state_path(self) -> None:
         self.assertRegex(
             self.kirby_code,
