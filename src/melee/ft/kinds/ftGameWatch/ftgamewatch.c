@@ -490,6 +490,7 @@ Fighter_CostumeStrings ftGw_Init_CostumeStrings[] = {
 void ftGw_Init_OnDeath(HSD_GObj* gobj)
 {
     Fighter* fp = GET_FIGHTER(gobj);
+    fp->co_attrs.initial_shield_size *= 1.6f;
     ftParts_80074A4C(gobj, 0U, 0);
     ftParts_80074A4C(gobj, 1U, -1);
     ftParts_80074A4C(gobj, 2U, 0);
@@ -530,7 +531,6 @@ void ftGw_Init_OnLoad(HSD_GObj* gobj)
 
     PUSH_ATTRS(fp, ftGameWatchAttributes);
     fp->u.gw.x2238_panicCharge = ftGw_Panic_Empty;
-    fp->co_attrs.initial_shield_size *= 1.6f;
 
     {
         ftGameWatchAttributes* da = fp->dat_attrs;

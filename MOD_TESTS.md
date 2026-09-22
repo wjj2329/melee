@@ -67,8 +67,9 @@ overlapping any files in the disc filesystem.
   decrease normally from the larger starting radius.
 - Fill Oil Panic, jump, and release with neutral stick; confirm Game & Watch
   launches diagonally backward and upward while the oil attack remains active.
-- Repeat aerial releases while holding each cardinal and diagonal stick
-  direction; confirm the launch follows the stick at a consistent speed.
+- Repeat aerial releases and move the stick to each cardinal and diagonal
+  direction during the first few startup frames; confirm the launch follows
+  that aim at a consistent speed.
 - Release a full bucket while grounded and confirm it retains retail grounded
   movement instead of unexpectedly launching upward.
 - Lose a stock after both shielding and using the bucket rocket; confirm the

@@ -24,6 +24,7 @@
 
 #define FTGW_BUCKET_ROCKET_SPEED 3.0f
 #define FTGW_BUCKET_ROCKET_DEADZONE_SQ 0.09f
+#define FTGW_BUCKET_ROCKET_AIM_FRAME 5.0f
 
 static void ftGw_SpecialAirLwShoot_ApplyRocket(Fighter* fp)
 {
@@ -615,6 +616,14 @@ void ftGw_SpecialLwShoot_Anim(HSD_GObj* gobj)
 void ftGw_SpecialAirLwShoot_Anim(HSD_GObj* gobj)
 {
     u8 _[8];
+    Fighter* fp = GET_FIGHTER(gobj);
+
+    if (fp->cmd_vars[2] == 0 &&
+        fp->cur_anim_frame >= FTGW_BUCKET_ROCKET_AIM_FRAME)
+    {
+        ftGw_SpecialAirLwShoot_ApplyRocket(fp);
+        fp->cmd_vars[2] = 1;
+    }
 
     ftGameWatch_SpecialLwShoot_ApplyDamage(gobj);
 
@@ -729,8 +738,7 @@ void ftGw_SpecialAirLwShoot_ReleaseOil(HSD_GObj* gobj)
 
     {
         Fighter* fp = GET_FIGHTER(gobj);
-
-        ftGw_SpecialAirLwShoot_ApplyRocket(fp);
+        fp->cmd_vars[2] = 0;
 
         {
             ftGameWatchAttributes* sa = getFtSpecialAttrs(fp);

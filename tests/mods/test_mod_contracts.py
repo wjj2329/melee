@@ -133,13 +133,29 @@ class GameWatchBucketRocketContractTests(unittest.TestCase):
         )
 
     def test_game_watch_starts_with_a_larger_shield(self) -> None:
-        self.assertIn("fp->co_attrs.initial_shield_size *= 1.6f", self.init_code)
+        on_death = self.init_code.split("void ftGw_Init_OnDeath", 1)[1].split(
+            "void ftGw_Init_OnLoad", 1
+        )[0]
+        on_load = self.init_code.split("void ftGw_Init_OnLoad", 1)[1].split(
+            "void ftGw_Init_OnDamage", 1
+        )[0]
+        self.assertIn("fp->co_attrs.initial_shield_size *= 1.6f", on_death)
+        self.assertNotIn("initial_shield_size", on_load)
 
     def test_aerial_bucket_release_uses_normalized_stick_direction(self) -> None:
         self.assertIn("fp->input.lstick[0].x", self.bucket_code)
         self.assertIn("fp->input.lstick[0].y", self.bucket_code)
         self.assertIn("lbVector_Normalize(&direction)", self.bucket_code)
         self.assertIn("FTGW_BUCKET_ROCKET_SPEED 3.0f", self.bucket_code)
+
+    def test_rocket_aim_is_sampled_after_the_down_b_input_frame(self) -> None:
+        self.assertIn("FTGW_BUCKET_ROCKET_AIM_FRAME 5.0f", self.bucket_code)
+        self.assertRegex(
+            self.bucket_code,
+            r"cur_anim_frame >= FTGW_BUCKET_ROCKET_AIM_FRAME[\s\S]*?"
+            r"ftGw_SpecialAirLwShoot_ApplyRocket\(fp\);[\s\S]*?"
+            r"fp->cmd_vars\[2\] = 1;",
+        )
 
     def test_neutral_release_defaults_backward_and_upward(self) -> None:
         self.assertIn("direction.x = -fp->facing_dir", self.bucket_code)
