@@ -357,6 +357,7 @@ class KirbyRandomTauntCopyContractTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.kirby_code = source("src/melee/ft/kinds/ftKirby/ftkirby.c")
         cls.taunt_code = source("src/melee/ft/kinds/ftCommon/ftCo_AppealS.c")
+        cls.preload_code = source("src/melee/lb/lbdvd.c")
 
     def test_completed_taunt_assigns_a_copy_only_to_kirby(self) -> None:
         self.assertRegex(
@@ -372,6 +373,14 @@ class KirbyRandomTauntCopyContractTests(unittest.TestCase):
         )
         self.assertGreaterEqual(self.kirby_code.count("archives[kind] != NULL"), 2)
         self.assertIn("selected = HSD_Randi(available);", self.kirby_code)
+
+    def test_kirby_preloads_the_entire_copy_roster_for_every_match(self) -> None:
+        self.assertRegex(
+            self.preload_code,
+            r"char_id == CKind_Kirby\) \{\s*CharacterKind kind;\s*"
+            r"for \(kind = 0; kind < ChKind_Max; kind\+\+\) \{\s*"
+            r"Player_80031D2C\(kind, game_cache->entries\[i\]\.color\);",
+        )
 
     def test_assignment_uses_the_normal_copy_state_path(self) -> None:
         self.assertRegex(
