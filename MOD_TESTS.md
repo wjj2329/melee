@@ -166,6 +166,8 @@ overlapping any files in the disc filesystem.
   and taunting grants one copy ability selected from the full playable cast.
 - Confirm the granted ability has its matching hat and that its neutral-B works;
   this verifies the preloaded file was also parsed into Kirby's runtime table.
+- Repeat with several Kirby costume colors and confirm each one receives the
+  correctly colored copy hat rather than silently keeping no ability.
 - Confirm repeated taunts within one match consistently grant that match's
   selected ability, while starting new matches produces varied abilities that
   do not need to match an opponent.

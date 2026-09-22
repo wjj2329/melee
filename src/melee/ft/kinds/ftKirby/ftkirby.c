@@ -2799,13 +2799,7 @@ void ftKb_SpecialN_800EED50(s32 arg0, s32 arg1)
 
 void ftKb_Init_UnkMotionStates5(void)
 {
-    CharacterKind copy_kind;
-
     Player_80031DC8(ftKb_SpecialN_800EED50);
-    copy_kind = lbDvd_GetMysteryCopyKind();
-    if (copy_kind != ChKind_None) {
-        ftKb_SpecialN_800EED50(Player_800325C8(copy_kind, false), 0);
-    }
 }
 
 void ftKb_SpecialN_800EEEC4(HSD_GObj* gobj, FighterKind kind)
@@ -4076,6 +4070,7 @@ void ftKb_SpecialN_800F1BAC(Fighter_GObj* gobj, s32 kind, bool arg2)
 
 void ftKb_SpecialN_AssignRandomLoadedCopy(Fighter_GObj* gobj)
 {
+    Fighter* fp = GET_FIGHTER(gobj);
     HSD_Archive** archives = (HSD_Archive**) &ft_80459B88;
     CharacterKind copy_kind = lbDvd_GetMysteryCopyKind();
     FighterKind kind;
@@ -4084,6 +4079,7 @@ void ftKb_SpecialN_AssignRandomLoadedCopy(Fighter_GObj* gobj)
         return;
     }
     kind = Player_800325C8(copy_kind, false);
+    ftKb_SpecialN_800EED50(kind, fp->x619_costume_id);
     if (ftKb_Init_803CA9D0[kind].filename != NULL &&
         archives[kind] != NULL)
     {
