@@ -57,20 +57,22 @@ class PichuHealingContractTests(unittest.TestCase):
     def test_change_is_guarded_to_pichu(self) -> None:
         self.assertIn("fp->kind == Ft_Kind_Pichu", self.code)
 
-    def test_healing_clamps_at_zero_and_updates_the_hud(self) -> None:
+    def test_healing_clamps_at_zero_and_uses_the_native_damage_path(self) -> None:
         self.assertRegex(
             self.code,
             r"if \(amount > fp->dmg\.x1830_percent\)\s*"
             r"\{\s*amount = fp->dmg\.x1830_percent;\s*\}",
         )
-        self.assertIn("fp->dmg.x1830_percent -= amount", self.code)
-        self.assertIn("Player_SetHPByIndex", self.code)
-        self.assertIn("pl_80040B8C", self.code)
-
-    def test_every_other_fighter_keeps_normal_self_damage(self) -> None:
+        self.assertIn("amount = -amount", self.code)
         self.assertRegex(
             self.code,
-            r"else\s*\{\s*Fighter_TakeDamage_8006CC7C\(fp, amount\);\s*\}",
+            r"\}\s*Fighter_TakeDamage_8006CC7C\(fp, amount\);",
+        )
+
+    def test_every_other_fighter_keeps_normal_self_damage(self) -> None:
+        self.assertEqual(self.code.count("amount = -amount"), 1)
+        self.assertEqual(
+            self.code.count("Fighter_TakeDamage_8006CC7C(fp, amount);"), 1
         )
 
 

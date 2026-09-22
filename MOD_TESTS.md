@@ -43,6 +43,8 @@ overlapping any files in the disc filesystem.
 - Confirm each recoil event lowers Pichu's displayed percent instead.
 - At 0 percent, confirm recoil moves remain at 0 rather than underflowing.
 - Confirm ordinary non-recoil attacks do not heal Pichu.
+- Hit a standing opponent with both an uncharged and fully charged Skull Bash;
+  confirm its hitbox, damage, and knockback still work while Pichu heals.
 - Repeat Thunder and Quick Attack many times, including after a respawn.
 - Select Pikachu and confirm the same actions retain their retail behavior.
 
