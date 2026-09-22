@@ -357,6 +357,56 @@ class YoungLinkGiantBombContractTests(unittest.TestCase):
         )
 
 
+class NessControllableMissileContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source(
+            "src/melee/ft/kinds/ftNess/ftnessspecialhi.c"
+        )
+
+    def test_both_startup_states_launch_ness_instead_of_the_ball(self) -> None:
+        for function in (
+            "ftNs_SpecialHiStart_Anim",
+            "ftNs_SpecialAirHiStart_Anim",
+        ):
+            self.assertRegex(
+                self.code,
+                rf"void {function}\(HSD_GObj\* gobj\)[\s\S]*?"
+                r"if \(!ftAnim_IsFramesRemaining\(gobj\)\) \{\s*"
+                r"ftNs_MysteryMissile_Enter\(gobj\);",
+            )
+
+    def test_neutral_stick_defaults_to_straight_up(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"stick_x = 0\.0f;\s*stick_y = 1\.0f;",
+        )
+
+    def test_launch_uses_native_pk_thunder_two_state_and_momentum(self) -> None:
+        self.assertIn(
+            "ness_attr->x54_PK_THUNDER_2_MOMENTUM * cosf(angle)",
+            self.code,
+        )
+        self.assertIn(
+            "ness_attr->x54_PK_THUNDER_2_MOMENTUM * sinf(angle)",
+            self.code,
+        )
+        self.assertRegex(
+            self.code,
+            r"Fighter_ChangeMotionState\(gobj, ftNs_MS_SpecialAirHi,",
+        )
+
+    def test_missile_steers_gradually_toward_the_stick(self) -> None:
+        self.assertIn("FTNESS_MYSTERY_MISSILE_TURN_RATE", self.code)
+        self.assertIn("target_angle = atan2f(stick_y, stick_x)", self.code)
+        self.assertIn("ftNs_MysteryMissile_Steer(fp)", self.code)
+        self.assertRegex(
+            self.code,
+            r"angle_diff > FTNESS_MYSTERY_MISSILE_TURN_RATE[\s\S]*?"
+            r"angle_diff < -FTNESS_MYSTERY_MISSILE_TURN_RATE",
+        )
+
+
 class MewtwoGrowingShadowBallContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

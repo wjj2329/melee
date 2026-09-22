@@ -42,6 +42,9 @@
         Ft_MF_UpdateCmd | Ft_MF_SkipItemVis | Ft_MF_Unk19 |                   \
         Ft_MF_SkipModelPartVis | Ft_MF_SkipModelFlags | Ft_MF_Unk27
 
+#define FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD 0.2f
+#define FTNESS_MYSTERY_MISSILE_TURN_RATE MTXDegToRad(6.0f)
+
 #ifdef MUST_MATCH
 static void order_sdata2(void)
 {
@@ -636,49 +639,97 @@ void ftNs_SpecialAirHi_Enter(HSD_GObj* gobj)
     fighter_data2->x1968_jumpsUsed = fighter_data2->co_attrs.max_jumps;
 }
 
+static void ftNs_MysteryMissile_Enter(Fighter_GObj* gobj)
+{
+    Fighter* fp = GET_FIGHTER(gobj);
+    ftNessAttributes* ness_attr = fp->dat_attrs;
+    float stick_x = fp->input.lstick[0].x;
+    float stick_y = fp->input.lstick[0].y;
+    float angle;
+
+    if (ABS(stick_x) <= FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD &&
+        ABS(stick_y) <= FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD)
+    {
+        stick_x = 0.0f;
+        stick_y = 1.0f;
+    }
+
+    angle = atan2f(stick_y, stick_x);
+    if (fp->ground_or_air == GA_Ground) {
+        ftCommon_8007D60C(fp);
+    }
+
+    fp->mv.ns.specialhi.aerialVel = angle;
+    fp->mv.ns.specialhi.facingDir = stick_y >= 0.0f ? 1.0f : -1.0f;
+    if (ABS(stick_x) > FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD) {
+        fp->facing_dir = stick_x >= 0.0f ? 1.0f : -1.0f;
+    }
+    fp->self_vel.x = ness_attr->x54_PK_THUNDER_2_MOMENTUM * cosf(angle);
+    fp->self_vel.y = ness_attr->x54_PK_THUNDER_2_MOMENTUM * sinf(angle);
+    fp->mv.ns.specialhi.unkVector1 = fp->self_vel;
+    fp->mv.ns.specialhi.unkVar = ness_attr->x58_PK_THUNDER_2_UNK1;
+    fp->mv.ns.specialhi.jibakuGFX = 0;
+    fp->u.ns.pkthunder_gobj = NULL;
+
+    Fighter_ChangeMotionState(gobj, ftNs_MS_SpecialAirHi, 0, 0.0f, 1.0f, 0.0f,
+                              NULL);
+    ftPartSetRotX(fp, 0,
+                  (fp->facing_dir * atan2f(fp->self_vel.x, fp->self_vel.y)) -
+                      (float) M_PI_2);
+    fp->death2_cb = NULL;
+    fp->take_dmg_cb = NULL;
+    fp->x1968_jumpsUsed = fp->co_attrs.max_jumps;
+}
+
+static void ftNs_MysteryMissile_Steer(Fighter* fp)
+{
+    float stick_x = fp->input.lstick[0].x;
+    float stick_y = fp->input.lstick[0].y;
+    float target_angle;
+    float angle_diff;
+
+    if (ABS(stick_x) <= FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD &&
+        ABS(stick_y) <= FTNESS_MYSTERY_MISSILE_STICK_THRESHOLD)
+    {
+        return;
+    }
+
+    target_angle = atan2f(stick_y, stick_x);
+    angle_diff = target_angle - fp->mv.ns.specialhi.aerialVel;
+    while (angle_diff > M_PI) {
+        angle_diff -= M_TAU;
+    }
+    while (angle_diff < -M_PI) {
+        angle_diff += M_TAU;
+    }
+
+    if (angle_diff > FTNESS_MYSTERY_MISSILE_TURN_RATE) {
+        angle_diff = FTNESS_MYSTERY_MISSILE_TURN_RATE;
+    } else if (angle_diff < -FTNESS_MYSTERY_MISSILE_TURN_RATE) {
+        angle_diff = -FTNESS_MYSTERY_MISSILE_TURN_RATE;
+    }
+    fp->mv.ns.specialhi.aerialVel += angle_diff;
+    while (fp->mv.ns.specialhi.aerialVel > M_PI) {
+        fp->mv.ns.specialhi.aerialVel -= M_TAU;
+    }
+    while (fp->mv.ns.specialhi.aerialVel < -M_PI) {
+        fp->mv.ns.specialhi.aerialVel += M_TAU;
+    }
+
+    if (cosf(fp->mv.ns.specialhi.aerialVel) > 0.0f) {
+        fp->facing_dir = 1.0f;
+    } else {
+        fp->facing_dir = -1.0f;
+    }
+    fp->mv.ns.specialhi.facingDir =
+        sinf(fp->mv.ns.specialhi.aerialVel) >= 0.0f ? 1.0f : -1.0f;
+}
+
 /// PK Thunder Grounded Startup Animation
 void ftNs_SpecialHiStart_Anim(HSD_GObj* gobj)
 {
-    Vec3 pkt_pos;
-
-    u8 _[32];
-
-    Fighter* fp = gobj->user_data;
-
     if (!ftAnim_IsFramesRemaining(gobj)) {
-        Fighter_ChangeMotionState(gobj, ftNs_MS_SpecialHiHold, 0, 0.0f, 1.0f,
-                                  0.0f, NULL);
-
-        {
-            Fighter* fighter_data2 = gobj->user_data;
-            HSD_GObj* pkt_ptr = fighter_data2->u.ns.pkthunder_gobj;
-            if (pkt_ptr == NULL) {
-                lb_8000B1CC(fighter_data2->parts[FtPart_L2ndNa].joint, NULL,
-                            &pkt_pos);
-
-                pkt_pos.z = 0.0f;
-
-                pkt_ptr =
-                    it_802AB58C(gobj, &pkt_pos, fighter_data2->facing_dir);
-
-                fighter_data2->u.ns.pkthunder_gobj = pkt_ptr;
-
-                if (pkt_ptr != NULL) {
-                    fighter_data2->death2_cb = ftNs_Init_OnDamage;
-                    fighter_data2->take_dmg_cb = ftNs_Init_OnDamage;
-                }
-            }
-        }
-
-        fp->x1968_jumpsUsed = fp->co_attrs.max_jumps;
-
-        fp = gobj->user_data;
-
-        ftNs_SpecialHiStopGFX(gobj);
-
-        efSync_Spawn(1262, gobj, fp->parts[FtPart_HipN].joint);
-
-        fp->u.ns.pkthunder_gfx = true;
+        ftNs_MysteryMissile_Enter(gobj);
     }
 }
 
@@ -809,46 +860,8 @@ void ftNs_SpecialHi_Anim(HSD_GObj* gobj)
 /// Ness's aerial PK Thunder Start Animation callback
 void ftNs_SpecialAirHiStart_Anim(HSD_GObj* gobj)
 {
-    Vec3 pkt_pos;
-
-    u8 _[32];
-
-    HSD_GObj* pkt_ptr;
-    Fighter* fp = gobj->user_data;
-
     if (!ftAnim_IsFramesRemaining(gobj)) {
-        Fighter_ChangeMotionState(gobj, ftNs_MS_SpecialAirHiHold, 0, 0.0f,
-                                  1.0f, 0.0f, NULL);
-
-        {
-            Fighter* fp2 = gobj->user_data;
-            pkt_ptr = fp2->u.ns.pkthunder_gobj;
-
-            if (pkt_ptr == 0) {
-                lb_8000B1CC(fp2->parts[FtPart_L2ndNa].joint, NULL, &pkt_pos);
-
-                pkt_pos.z = 0.0f;
-
-                pkt_ptr = it_802AB58C(gobj, &pkt_pos, fp2->facing_dir);
-
-                fp2->u.ns.pkthunder_gobj = pkt_ptr;
-
-                if (pkt_ptr != NULL) {
-                    fp2->death2_cb = ftNs_Init_OnDamage;
-                    fp2->take_dmg_cb = ftNs_Init_OnDamage;
-                }
-            }
-        }
-
-        fp->x1968_jumpsUsed = fp->co_attrs.max_jumps;
-
-        fp = gobj->user_data;
-
-        ftNs_SpecialHiStopGFX(gobj);
-
-        efSync_Spawn(1262, gobj, fp->parts[FtPart_HipN].joint);
-
-        fp->u.ns.pkthunder_gfx = true;
+        ftNs_MysteryMissile_Enter(gobj);
     }
 }
 
@@ -1273,6 +1286,8 @@ void ftNs_SpecialAirHi_Phys(HSD_GObj* gobj)
 
     fp = getFighter(gobj);
     ness_attr = getFtSpecialAttrs2(fp);
+
+    ftNs_MysteryMissile_Steer(fp);
 
     phi_f1 = ABS(lbVector_Len_xy(&fp->self_vel));
     temp_f2 = phi_f1 - ness_attr->x5C_PK_THUNDER_2_DECELERATION_RATE;

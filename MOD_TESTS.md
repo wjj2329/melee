@@ -143,6 +143,20 @@ overlapping any files in the disc filesystem.
   loss.
 - Select regular Link and confirm his bombs retain normal size and blast range.
 
+## Ness
+
+- Use up-B on the ground and in the air; confirm the startup transitions
+  directly into PK Thunder 2 without creating a controllable thunder ball.
+- Leave the stick neutral through startup and confirm Ness launches straight up.
+- Hold all eight primary stick directions during startup and confirm the initial
+  launch follows the chosen direction.
+- While Ness is flying, rotate the stick and confirm he curves smoothly toward
+  it rather than snapping direction or losing speed immediately.
+- Confirm Ness retains PK Thunder 2's damaging body hitbox, visual effect,
+  wall/ceiling interactions, landing behavior, and special-fall ending.
+- Test floors, slopes, platforms, walls, ceilings, ledges, shields, and opposing
+  fighters, then repeat at least 20 launches and after losing a stock.
+
 ## Mewtwo
 
 - Fire uncharged, partially charged, and fully charged Shadow Balls; confirm
