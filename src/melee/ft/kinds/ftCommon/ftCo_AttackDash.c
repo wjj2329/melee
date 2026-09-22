@@ -15,6 +15,8 @@
 #include <melee/ft/ft_084E.h>
 #include <melee/ft/ft_0892.h>
 #include <melee/ft/ftanim.h>
+#include <melee/ft/ftcoll.h>
+#include <melee/ft/ftcommon.h>
 #include <melee/ft/ftswing.h>
 #include <melee/ft/kinds/ftKirby/ftkirbyattackdash.h>
 #include <melee/ft/types.h>
@@ -22,6 +24,51 @@
 
 /* 08B498 */ static void decideFighter(Fighter_GObj* gobj);
 /* 08B4D4 */ static void doEnter(Fighter_GObj* gobj);
+
+#define LUIGI_DASH_FINISHER_START 44.0f
+#define LUIGI_DASH_FINISHER_END 47.0f
+#define LUIGI_DASH_FINISHER_DAMAGE 25
+#define LUIGI_DASH_FINISHER_ANGLE 361
+#define LUIGI_DASH_FINISHER_KNOCKBACK_GROWTH 90
+#define LUIGI_DASH_FINISHER_BASE_KNOCKBACK 60
+#define LUIGI_DASH_FINISHER_HIT_GROUP 0x7F
+
+static void ftCo_AttackDash_LuigiFinisher(Fighter_GObj* gobj)
+{
+    Fighter* fp = GET_FIGHTER(gobj);
+    HitCapsule* hit;
+    int i;
+
+    if (fp->kind != Ft_Kind_Luigi) {
+        return;
+    }
+
+    if (fp->cur_anim_frame >= LUIGI_DASH_FINISHER_START &&
+        fp->cur_anim_frame < LUIGI_DASH_FINISHER_END &&
+        fp->x914[0].state == HitCapsule_Disabled)
+    {
+        for (i = 0; i < 2; i++) {
+            hit = &fp->x914[i];
+            hit->x4 = LUIGI_DASH_FINISHER_HIT_GROUP;
+            hit->state = HitCapsule_Enabled;
+            ftColl_800768A0(fp, hit);
+            ftColl_8007ABD0(hit, LUIGI_DASH_FINISHER_DAMAGE, gobj);
+            ftColl_8007AC9C(hit, LUIGI_DASH_FINISHER_ANGLE, gobj);
+            hit->x24 = LUIGI_DASH_FINISHER_KNOCKBACK_GROWTH;
+            hit->x28 = 0;
+            hit->x2C = LUIGI_DASH_FINISHER_BASE_KNOCKBACK;
+            hit->element = HitElement_Fire;
+            hit->sfx_severity = 2;
+            hit->scale *= 1.75f;
+            ftColl_8007AD18(fp, hit);
+        }
+        fp->x2219_b3 = true;
+        ftCommon_80080484(fp);
+    } else if (fp->cur_anim_frame >= LUIGI_DASH_FINISHER_END) {
+        fp->x914[0].state = HitCapsule_Disabled;
+        fp->x914[1].state = HitCapsule_Disabled;
+    }
+}
 
 bool ftCo_AttackDash_CheckInput(HSD_GObj* gobj)
 {
@@ -70,6 +117,8 @@ static void doEnter(Fighter_GObj* gobj)
 
 void ftCo_AttackDash_Anim(Fighter_GObj* gobj)
 {
+    ftCo_AttackDash_LuigiFinisher(gobj);
+
     if (!ftAnim_IsFramesRemaining(gobj)) {
         ft_8008A2BC(gobj);
     }

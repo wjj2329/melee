@@ -32,6 +32,37 @@ class GanonUpTiltContractTests(unittest.TestCase):
         self.assertIn("ftAnim_SetAnimRate(gobj, 16.0f)", self.code)
 
 
+class LuigiDashFinisherContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source(
+            "src/melee/ft/kinds/ftCommon/ftCo_AttackDash.c"
+        )
+
+    def test_finisher_is_guarded_to_luigi(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"if \(fp->kind != Ft_Kind_Luigi\) \{\s*return;",
+        )
+
+    def test_finisher_has_a_bounded_three_frame_window(self) -> None:
+        self.assertIn("LUIGI_DASH_FINISHER_START 44.0f", self.code)
+        self.assertIn("LUIGI_DASH_FINISHER_END 47.0f", self.code)
+        self.assertRegex(
+            self.code,
+            r"cur_anim_frame >= LUIGI_DASH_FINISHER_END[\s\S]*?"
+            r"x914\[0\]\.state = HitCapsule_Disabled;[\s\S]*?"
+            r"x914\[1\]\.state = HitCapsule_Disabled;",
+        )
+
+    def test_finisher_resets_collision_history_and_hits_hard(self) -> None:
+        self.assertIn("ftColl_800768A0(fp, hit)", self.code)
+        self.assertIn("LUIGI_DASH_FINISHER_DAMAGE 25", self.code)
+        self.assertIn("LUIGI_DASH_FINISHER_KNOCKBACK_GROWTH 90", self.code)
+        self.assertIn("LUIGI_DASH_FINISHER_BASE_KNOCKBACK 60", self.code)
+        self.assertIn("hit->element = HitElement_Fire", self.code)
+
+
 class MarioScaleContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

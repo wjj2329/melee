@@ -29,6 +29,18 @@ overlapping any files in the disc filesystem.
 - Confirm it interacts with shields and can whiff without becoming stuck.
 - Repeat it at least 20 times and use it again after losing a stock.
 
+## Luigi
+
+- Connect dash attack and confirm its six weak punches are followed by a large
+  fiery finishing hit during the final swing.
+- Confirm the finisher deals 25 percent before staling and launches with roughly
+  Falcon Punch-level force.
+- Test the finisher against grounded opponents, airborne opponents, shields,
+  crouching characters, and opponents on either side of Luigi.
+- Whiff the move and confirm its hitboxes disappear after the finishing swing.
+- Repeat dash attack at least 20 times and again after losing a stock.
+- Select other characters and confirm their dash attacks retain retail behavior.
+
 ## Mario
 
 - Confirm Mario begins at normal size.
