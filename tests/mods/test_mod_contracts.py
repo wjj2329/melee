@@ -49,6 +49,36 @@ class MarioScaleContractTests(unittest.TestCase):
         )
 
 
+class PikachuThunderGrowthContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.code = source(
+            "src/melee/ft/kinds/ftPikachu/ftpikachuspeciallw.c"
+        )
+
+    def test_growth_requires_thunder_to_reach_pikachu(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"if \(\(final_y_pos < pika_attr->xC8\)[\s\S]*?"
+            r"it_802B1FC8\(fp->mv.pk.speciallw.x0\);[\s\S]*?"
+            r"fp->x200C\+\+;[\s\S]*?return true;",
+        )
+
+    def test_only_regular_pikachu_receives_the_growth_event(self) -> None:
+        self.assertRegex(
+            self.code,
+            r"if \(fp->kind == Ft_Kind_Pikachu\) \{\s*fp->x200C\+\+;\s*\}",
+        )
+
+    def test_uses_the_native_deferred_super_mushroom_event(self) -> None:
+        fighter_code = source("src/melee/ft/fighter.c")
+        self.assertRegex(
+            fighter_code,
+            r"while \(fp->x200C != 0\) \{\s*"
+            r"Fighter_SuperMushroomApply\(gobj\);\s*fp->x200C--;",
+        )
+
+
 class PichuHealingContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

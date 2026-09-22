@@ -83,6 +83,9 @@ bool ftPk_SpecialLw_8012765C(HSD_GObj* gobj)
             !it_802B1DEC(fp->mv.pk.speciallw.x0))
         {
             it_802B1FC8(fp->mv.pk.speciallw.x0);
+            if (fp->kind == Ft_Kind_Pikachu) {
+                fp->x200C++;
+            }
             return true;
         }
     }

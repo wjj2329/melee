@@ -37,6 +37,20 @@ overlapping any files in the disc filesystem.
 - Confirm a stock loss resets him to normal size.
 - Check Super and Poison Mushroom interactions when items are enabled.
 
+## Pikachu
+
+- Use down-B with the Thunder column aligned over Pikachu and confirm that the
+  move enters its normal self-hit state, then triggers the Super Mushroom growth
+  animation.
+- Miss Pikachu with Thunder and confirm he remains normal size.
+- While giant, verify movement, attacks, hitboxes, shield, grabs, ledges, and
+  knockback behave like the native Super Mushroom state.
+- Hit Pikachu with Thunder again while giant and confirm the native size timer is
+  refreshed without stacking his scale or corrupting the move state.
+- Confirm Pikachu returns to normal size when the native mushroom timer expires.
+- Select Pichu and Kirby with Pikachu's copied neutral-B and confirm neither gains
+  this Thunder growth effect.
+
 ## Pichu
 
 - Begin above 20 percent and use every move that normally causes recoil.
